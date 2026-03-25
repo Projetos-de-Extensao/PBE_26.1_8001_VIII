@@ -3,10 +3,46 @@ id: pesquisa
 title: Pesquisa
 ---
 
-# Pesquisa
-## Pesquisa
-### Pesquisa
+# Estudo sobre Regras de Estágio e Sistemas de Controle
 
-Pesquisa realizada para compreensão das principais características do Aplicativo de **Streaming**.
+Esta pesquisa descreve os fundamentos que regem a prática de estágio no Brasil, os requisitos das instituições de ensino e o funcionamento de ferramentas de validação.
 
-> Dorothy followed her through many of the beautiful rooms in her castle.
+---
+
+### 1. Legislação Trabalhista (Lei 11.788/08)
+Diferente de um emprego comum, o estágio foca no aprendizado. Os principais pontos da lei federal são:
+
+- **Contrato:** Deve ser assinado um Termo de Compromisso entre aluno, empresa e faculdade.
+- **Limite de Horas:** A jornada não pode passar de 6 horas por dia (30 horas por semana).
+- **Férias:** O estagiário tem direito a 30 dias de descanso remunerado após um ano na mesma empresa.
+- **Duração:** O contrato na mesma empresa pode durar no máximo 2 anos.
+- **Auxílios:** O pagamento de bolsa e auxílio-transporte é obrigatório sempre que o estágio não for uma exigência do curso (não obrigatório).
+
+### 2. Legislação MEC
+O Ministério da Educação exige que o estágio tenha valor educativo real:
+
+- **Plano de Trabalho:** As tarefas na empresa precisam ter relação direta com o que o aluno estuda em sala de aula.
+- **Acompanhamento:** A faculdade deve ter um professor responsável por acompanhar o estágio, enquanto a empresa deve ter um supervisor experiente na área.
+- **Avaliação:** O aluno precisa entregar relatórios periódicos para provar que está aprendendo e cumprindo as tarefas combinadas.
+
+### 3. Regulamento Ibmec
+Normas específicas para os alunos da instituição:
+
+- **Aprovação Documental:** Nenhum estágio pode começar sem a validação prévia dos documentos pelo setor de carreiras.
+- **Portal do Aluno (SIA):** Todo o controle de horas e envio de contratos é feito de forma digital pelo sistema interno.
+- **Estágio Obrigatório:** Para se formar, o aluno deve cumprir a carga horária de estágio prevista na grade do curso, seguindo os prazos de entrega do relatório final.
+
+### 4. Aplicações Similares
+Softwares e plataformas que fazem a gestão desse processo no mercado:
+
+- **CIEE e Nube:** Atuam como pontes, facilitando a contratação e cuidando da parte burocrática e dos seguros.
+- **Plataformas de Carreira:** Sistemas que permitem que a empresa publique vagas e receba os documentos dos alunos de forma organizada.
+- **Assinatura Eletrônica:** Ferramentas que permitem assinar os contratos pelo celular ou computador, agilizando o processo legal.
+
+### 5. Validação do Relatório (Automática)
+Como funciona a conferência automática feita pelos sistemas:
+
+- **Checagem de Datas:** O sistema confere se o relatório foi entregue no prazo e se o aluno ainda está matriculado.
+- **Controle de Carga Horária:** Verifica se a soma das horas feitas bate com o que foi acordado no contrato, bloqueando excessos.
+- **Assinatura Digital:** O sistema só libera o relatório como "aprovado" se identificar as assinaturas digitais válidas de todas as partes.
+- **Integração com o Histórico:** Assim que o relatório é validado pelo sistema, as horas de estágio são lançadas automaticamente no currículo do aluno.
