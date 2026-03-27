@@ -1,6 +1,6 @@
 # Projeto Back-End 
 
-**Integrantes**: Marco Antonio, Lucas Calil, Gabriel de Santi, Francisco Fagner
+**Integrantes**: Marco Antonio, Lucas Calil, Gabriel de Santi, Francisco Fagner, Pedro Carvalho
 
 ## Sobre 
 Descreva o seu projeto em linhas gerais. 
