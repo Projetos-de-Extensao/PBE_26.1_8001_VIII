@@ -1,4 +1,4 @@
-## Estudo sobre Regras de Estágio e Sistemas de Controle
+# Estudo sobre Regras de Estágio e Sistemas de Controle
 
 Esta pesquisa descreve os fundamentos que regem a prática de estágio no Brasil, os requisitos das instituições de ensino e o funcionamento de ferramentas de validação.
 
