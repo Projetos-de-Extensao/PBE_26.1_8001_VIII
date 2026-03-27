@@ -1,6 +1,6 @@
 # Projeto Back-End 
 
-**Código da Disciplina**: IBM8936<br>
+**Integrantes**: Marco Antonio, Lucas Calil, Gabriel de Santi, Francisco Fagner
 
 ## Sobre 
 Descreva o seu projeto em linhas gerais. 
