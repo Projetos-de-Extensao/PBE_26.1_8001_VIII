@@ -3,46 +3,58 @@ id: mapa_mental
 title: Mapas Mentais
 ---
  
-## Introdução
- 
-<p align = "justify">
-Mapa mental consiste em criar resumos cheios de símbolos, cores, setas e frases de efeito com o objetivo de organizar o conteúdo e facilitar associações entre as informações destacadas. Esse material é muito indicado para pessoas que têm facilidade de aprender de forma visual.
-</p>
- 
-## Metodologia
- 
-<p align = "justify">
-Foi levantado um ponto importante sobre o app e, assim, foi produzido o mapa mental. O documento foi produzido utilizando a ferramenta...
-</p>
- 
-## Mapa mental - Geral.
- 
-## Versão 1.0
- 
-### Mapa mental 1
- 
-[![Mapa mental Entrevista](../assets/Mapas_Mentais/image.png)](../assets/Mapas_Mentais/image.png)
- 
- 
-### Mapa mental 2
- 
-[![Mapa mental Brainstorm](../assets/Mapas_Mentais/image.png)](../assets/Mapas_Mentais/image.png)
- 
-## Conclusão
- 
-<p align = "justify">
-O mapa mental é uma ficha de estudos que ajuda a dar uma visão geral do tema, e ajuda a fixar os pontos mais importantes sobre o app.
-</p>
- 
-## Referências
-> Mapa MentalXXX,  Disponível em: https://www.....
- 
-> Ferramentas para Mapas Mentais. Disponível em: https://www....
- 
-> Plataforma para usuários colaborar no desenho... Disponível em: https://...
- 
-## Versionamento
-| Data | Versão | Descrição | Autor(es) |
-| -- | -- | -- | -- |
-| dd/mm/yy | 1.0 | Criação do documento | xxx xxxx |
-| dd/mm/yy | 2.0 | Adicionado Mapa mental 2 | xxxx xxxx |
+@startmindmap
+* Sistema de Validação de Estágios (API)
+
+** Objetivo Principal
+*** Validar contratos automaticamente
+*** Evitar erros iniciais
+*** Integração com SIA (IBMEC)
+
+** Validação do TCE
+*** Verificar duração <= 2 anos
+*** Validar carga horária
+**** <= 6 horas/dia
+**** <= 30 horas/semana
+*** Tipo de estágio
+**** Obrigatório
+**** Não obrigatório
+***** Exigir bolsa
+***** Exigir auxílio-transporte
+
+** Relatórios e Rotina
+*** Relatório a cada 6 meses
+*** Alertas automáticos
+*** Verificar assinaturas digitais
+*** Controle de horas
+**** Somar horas registradas
+**** Bloquear excesso
+
+** Informações para Carreiras
+*** Lista de contratos
+**** Aprovados
+**** Reprovados
+***** Motivo do erro
+*** Validação prévia (OK final)
+*** Verificar alunos formados
+
+** Tratamento de Erros
+*** Dados obrigatórios faltantes
+**** Ex: apólice de seguro
+*** Status: Pendente de Correção
+*** Mensagens de erro claras
+
+** Requisitos Funcionais (BS)
+*** BS01: <= 6h/dia
+*** BS02: <= 30h/semana
+*** BS03: <= 2 anos contrato
+*** BS04: Bolsa obrigatória (não obrigatório)
+*** BS05: Apólice obrigatória
+*** BS06: Validar matrícula
+*** BS07: Alerta semestral
+*** BS08: Bloquear horas excedentes
+*** BS09: Validar assinaturas digitais
+*** BS10: Mensagens de erro específicas
+
+@endmindmap
+
