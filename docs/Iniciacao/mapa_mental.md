@@ -6,43 +6,39 @@ title: Mapas Mentais
 ## Introdução
  
 <p align = "justify">
-Mapa mental consiste em criar resumos cheios de símbolos, cores, setas e frases de efeito com o objetivo de organizar o conteúdo e facilitar associações entre as informações destacadas. Esse material é muito indicado para pessoas que têm facilidade de aprender de forma visual.
+Mapa mental consiste em criar resumos cheios de símbolos, cores, setas e frases de efeito com o objetivo de organizar o conteúdo e facilitar associações entre as informações destacadas. Esse material é muito indicado para pessoas que têm facilidade de aprender de forma visual, auxiliando a equipe a compreender a estrutura geral do projeto de validação de estágios.
 </p>
  
 ## Metodologia
  
 <p align = "justify">
-Foi levantado um ponto importante sobre o app e, assim, foi produzido o mapa mental. O documento foi produzido utilizando a ferramenta...
+Foram levantados os pontos críticos sobre as regras de negócio da API de validação (Lei nº 11.788/08, regulamento do IBMEC, 5W2H e Brainstorm) e, assim, foi produzido o mapa mental. O documento foi construído utilizando a ferramenta PlantUML para representar a arquitetura lógica e as restrições do sistema.
 </p>
  
-## Mapa mental - Geral.
+## Mapa mental - Geral
  
 ## Versão 1.0
  
-### Mapa mental 1
+### Mapa mental 1: Ecossistema de Validação de Estágios
  
-[![Mapa mental Entrevista](../assets/Mapas_Mentais/image.png)](../assets/Mapas_Mentais/image.png)
- 
- 
-### Mapa mental 2
- 
-[![Mapa mental Brainstorm](../assets/Mapas_Mentais/image.png)](../assets/Mapas_Mentais/image.png)
- 
+![Mapa Mental Ecossistema](../assets/Mapas_Mentais/plantuml.png)
+
 ## Conclusão
  
 <p align = "justify">
-O mapa mental é uma ficha de estudos que ajuda a dar uma visão geral do tema, e ajuda a fixar os pontos mais importantes sobre o app.
+O mapa mental atua como uma ficha de estudos que ajuda a dar uma visão geral do ecossistema do projeto, facilitando a fixação dos pontos mais importantes sobre a legislação vigente e as normas institucionais que a API deve obrigatoriamente respeitar e validar.
 </p>
  
-## Referências
-> Mapa MentalXXX,  Disponível em: https://www.....
+## Referências Bibliográficas
+
+- BRASIL. Lei nº 11.788, de 25 de setembro de 2008.
+
+- IBMEC Manual para gerar Termo de Compromisso de Estágio - TCE.
  
-> Ferramentas para Mapas Mentais. Disponível em: https://www....
- 
-> Plataforma para usuários colaborar no desenho... Disponível em: https://...
+- PlantUML: Open-source tool that uses simple textual descriptions to draw UML diagrams. Disponível em: https://plantuml.com/
  
 ## Versionamento
 | Data | Versão | Descrição | Autor(es) |
 | -- | -- | -- | -- |
-| dd/mm/yy | 1.0 | Criação do documento | xxx xxxx |
-| dd/mm/yy | 2.0 | Adicionado Mapa mental 2 | xxxx xxxx |
+| 10/04/2026 | 1.0 | Criação do documento  | Marco Antonio |
+| 10/04/2026 | 1.0 | Adicionando imagem    | Lucas Calil   |

@@ -123,4 +123,4 @@ Através da aplicação da técnica de brainstorm focada nas regras de negócio 
 ## Autor(es)
 | Data | Versão | Descrição | Autor(es) |
 | -- | -- | -- | -- |
-| 10/04/2026 | 1.0 | Criação do documento | Lucas Calil  |
+| 10/04/2026 | 1.0 | Criação do documento | Lucas Calil, Marco Antonio, Gabriel de Santi  |
