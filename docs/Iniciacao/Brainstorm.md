@@ -22,15 +22,15 @@ A equipe se reuniu para debater ideias gerais sobre o projeto do Sistema de Vali
 ### 1. Qual o objetivo principal da nossa API (sistema back-end)?
  
 <p align = "justify">
-<b>Desenvolvedor 1</b> - O principal objetivo é receber os dados dos contratos de estágio e conferir automaticamente se estão dentro da lei.
+<b>Lucas Calil</b> - O principal objetivo é receber os dados dos contratos de estágio e conferir automaticamente se estão dentro da lei.
 </p>
  
 <p align = "justify">
-<b>Desenvolvedor 2</b> - A aplicação precisa barrar qualquer erro logo de cara, para evitar dores de cabeça para a faculdade e para a empresa.
+<b>Marco Antonio</b> - A aplicação precisa barrar qualquer erro logo de cara, para evitar dores de cabeça para a faculdade e para a empresa.
 </p>
  
 <p align = "justify">
-<b>Desenvolvedor 3</b> - A plataforma deve se integrar com o sistema acadêmico do IBMEC (o SIA) para automatizar a aprovação das horas dos alunos de forma segura.
+<b>Gabriel de Santi</b> - A plataforma deve se integrar com o sistema acadêmico do IBMEC (o SIA) para automatizar a aprovação das horas dos alunos de forma segura.
 </p>
  
 ---
@@ -38,15 +38,15 @@ A equipe se reuniu para debater ideias gerais sobre o projeto do Sistema de Vali
 ### 2. Como será o processo para validar um novo Termo de Compromisso de Estágio (TCE)?
  
 <p align = "justify">
-<b>Desenvolvedor 1</b> - O sistema vai receber o documento e a primeira coisa é checar as datas. O estágio na mesma empresa não pode passar de 2 anos.
+<b>Lucas Calil</b> - O sistema vai receber o documento e a primeira coisa é checar as datas. O estágio na mesma empresa não pode passar de 2 anos.
 </p>
 
 <p align = "justify">
-<b>Desenvolvedor 2</b> - Tem que conferir as horas também. O limite máximo permitido pela lei é de 6 horas por dia e 30 horas na semana. Se passar disso, o sistema reprova.
+<b>Marco Antonio</b> - Tem que conferir as horas também. O limite máximo permitido pela lei é de 6 horas por dia e 30 horas na semana. Se passar disso, o sistema reprova.
 </p>
 
 <p align = "justify">
-<b>Desenvolvedor 3</b> - O back-end também vai olhar se o estágio é obrigatório ou não. Se for não obrigatório, o sistema vai exigir que tenha o valor da bolsa e o auxílio-transporte preenchidos no contrato.
+<b>Gabriel de Santi</b> - O back-end também vai olhar se o estágio é obrigatório ou não. Se for não obrigatório, o sistema vai exigir que tenha o valor da bolsa e o auxílio-transporte preenchidos no contrato.
 </p>
  
 ---
@@ -54,15 +54,15 @@ A equipe se reuniu para debater ideias gerais sobre o projeto do Sistema de Vali
 ### 3. Como o sistema vai lidar com relatórios e o dia a dia do estagiário?
  
 <p align = "justify">
-<b>Desenvolvedor 1</b> - A lei exige que a empresa mande um relatório de atividades a cada 6 meses no máximo. O sistema precisa criar alertas para cobrar isso.
+<b>Lucas Calil</b> - A lei exige que a empresa mande um relatório de atividades a cada 6 meses no máximo. O sistema precisa criar alertas para cobrar isso.
 </p>
  
 <p align = "justify">
-<b>Desenvolvedor 2</b> - Para o IBMEC validar as horas no final, o sistema vai verificar se o relatório foi entregue e se tem todas as assinaturas digitais certinhas.
+<b>Marco Antonio</b> - Para o IBMEC validar as horas no final, o sistema vai verificar se o relatório foi entregue e se tem todas as assinaturas digitais certinhas.
 </p>
  
 <p align = "justify">
-<b>Desenvolvedor 3</b> - E na hora que o aluno registrar as horas da semana, a API tem que somar tudo. Se o aluno tentar colocar mais horas do que o curso permite, a gente bloqueia.
+<b>Gabriel de Santi</b> - E na hora que o aluno registrar as horas da semana, a API tem que somar tudo. Se o aluno tentar colocar mais horas do que o curso permite, a gente bloqueia.
 </p>
  
 ---
@@ -70,26 +70,26 @@ A equipe se reuniu para debater ideias gerais sobre o projeto do Sistema de Vali
 ### 4. Quais informações seriam importantes para o setor de Carreiras do IBMEC visualizar?
  
 <p align = "justify">
-<b>Desenvolvedor 1</b> - Eles precisam de uma lista mostrando quais contratos foram aprovados e quais foram bloqueados com o motivo do erro (ex: "Passou de 30h semanais").
+<b>Lucas Calil</b> - Eles precisam de uma lista mostrando quais contratos foram aprovados e quais foram bloqueados com o motivo do erro (ex: "Passou de 30h semanais").
 </p>
  
 <p align = "justify">
-<b>Desenvolvedor 2</b> - O setor de carreiras precisa fazer uma validação prévia. Então o sistema manda os dados limpos e checados para eles darem o "OK" final antes de iniciar.
+<b>Marco Antonio</b> - O setor de carreiras precisa fazer uma validação prévia. Então o sistema manda os dados limpos e checados para eles darem o "OK" final antes de iniciar.
 </p>
  
 <p align = "justify">
-<b>Desenvolvedor 3</b> - Seria legal avisar a faculdade quais alunos já se formaram, porque quem já formou não pode continuar estagiando.
+<b>Gabriel de Santi</b> - Seria legal avisar a faculdade quais alunos já se formaram, porque quem já formou não pode continuar estagiando.
 </p>
 
 ---
  
 ### 5. O que o sistema faz se faltar alguma informação obrigatória da Lei ou do IBMEC?
 <p align = "justify">
-<b>Desenvolvedor 1</b> - Se faltar, por exemplo, o número da apólice de seguro contra acidentes (que é obrigatório), o sistema retorna um erro claro pedindo para preencher.
+<b>Lucas Calil</b> - Se faltar, por exemplo, o número da apólice de seguro contra acidentes (que é obrigatório), o sistema retorna um erro claro pedindo para preencher.
 </p>
 
 <p align = "justify">
-<b>Desenvolvedor 2</b> - O contrato fica com o status de "Pendente de Correção" no banco de dados e não segue para a assinatura da instituição de ensino até ser arrumado.
+<b>Marco Antonio</b> - O contrato fica com o status de "Pendente de Correção" no banco de dados e não segue para a assinatura da instituição de ensino até ser arrumado.
 </p>
  
 ---
