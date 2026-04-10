@@ -1,0 +1,40 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Usuário" as Usuario
+actor "Sistema" as Sistema
+
+package "Cadastro de Usuário" {
+  usecase "Fornecer e-mail e senha" as UC1
+  usecase "Validar dados" as UC2
+  usecase "Encriptar senha" as UC3
+  usecase "Persistir dados" as UC4
+  usecase "Gerar link de verificação" as UC5
+  usecase "Enviar e-mail de verificação" as UC6
+  usecase "Confirmar e-mail" as UC7
+  usecase "Redirecionar para página de entrada" as UC8
+}
+
+Usuario --> UC1
+UC1 --> UC2
+UC2 --> UC3
+UC3 --> UC4
+UC4 --> UC5
+UC5 --> UC6
+Usuario --> UC7
+UC7 --> UC8
+
+note right of UC2
+  Fluxos alternativos:
+  2a. E-mail inválido
+  2b. Senha não atende regras
+end note
+
+note right of UC7
+  Fluxo alternativo:
+  3a. Link expirado
+  3a1. Solicitar novo cadastro
+end note
+
+@enduml
