@@ -23,3 +23,22 @@ Foram levantados os pontos críticos sobre as regras de negócio da API de valid
  
 ![Mapa Mental Ecossistema](../assets/Mapas_Mentais/plantuml.png)
 
+## Conclusão
+ 
+<p align = "justify">
+O mapa mental atua como uma ficha de estudos que ajuda a dar uma visão geral do ecossistema do projeto, facilitando a fixação dos pontos mais importantes sobre a legislação vigente e as normas institucionais que a API deve obrigatoriamente respeitar e validar.
+</p>
+ 
+## Referências Bibliográficas
+
+- BRASIL. Lei nº 11.788, de 25 de setembro de 2008.
+
+- IBMEC Manual para gerar Termo de Compromisso de Estágio - TCE.
+ 
+- PlantUML: Open-source tool that uses simple textual descriptions to draw UML diagrams. Disponível em: https://plantuml.com/
+ 
+## Versionamento
+| Data | Versão | Descrição | Autor(es) |
+| -- | -- | -- | -- |
+| 10/04/2026 | 1.0 | Criação do documento  | Marco Antonio |
+| 10/04/2026 | 1.0 | Adicionando imagem    | Lucas Calil   |
