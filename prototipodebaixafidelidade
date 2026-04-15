@@ -1,0 +1,46 @@
+@startsalt
+{
+  {T
+    + Cadastro de Estágio
+  }
+
+  Nome do aluno: | "            "
+  Empresa:       | "            "
+  Curso:         | "            "
+  Carga horária: | "            "
+
+  Documentos: [Selecionar arquivo]
+
+  [ Enviar ]
+}
+@endsalt
+
+@startsalt
+{
+  {T
+    + Resultado da Validação
+  }
+
+  Status: [Reprovado]
+
+  Erros:
+  - Carga horária inválida
+  - Documento faltando
+
+  [ Corrigir dados ]
+}
+@endsalt
+
+@startsalt
+{
+  {T
+    + Análise do Coordenador
+  }
+
+  Dados do estágio: [Visualizar]
+
+  Resultado automático: [Inconsistente]
+
+  [[ Aprovar] ] [ Rejeitar]]
+}
+@endsalt
