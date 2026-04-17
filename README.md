@@ -37,33 +37,7 @@ Pendências são identificadas
 Resultado é exibido
 Coordenação pode revisar (opcional)
 
-Tecnologias Sugeridas:
 
-Back-end: Python / django 
-
-Estrutura do Projeto
-project/
-├── frontend/
-├── backend/
-├── docs/
-└── README.md
-Exemplo de Validação
-Se aluno_apto = true
-e carga_horaria <= limite
-e area_relacionada = true
-e documentos_ok = true
-→ aprovado
-senão → pendente ou reprovado
-
-Benefícios
-padronização da validação
-agilidade na análise
-redução de erros
-transparência no processo
-
-Status
-
-Em desenvolvimento.
 
 ## Instalação 
 **Linguagens**: Python, Django<br>
