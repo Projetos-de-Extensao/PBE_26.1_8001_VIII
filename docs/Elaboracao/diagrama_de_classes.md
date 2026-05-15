@@ -1,87 +1,190 @@
+
+
+```markdown
 ---
-id: diagrama_de_casos de uso
-title: Diagrama de Casos de Uso
+id: sistema_validador_estagio
+title: Documentação Técnica - Sistema Validador de Estágio
 ---
 
-## Casos de Uso
+## 1. Diagrama de Casos de Uso
 
-### Descrição:
+```plantuml
+@startuml Sistema_Validador_Estagio
 
-- Contas
-	- Criação
-	- Entrada
-	- Alteração
-	- Recuperar Senha
-	- Exclusão Lógica
-	- Visualização
+left to right direction
+skinparam actorStyle awesome
 
-- Perfis
-	- Edição
-	- Pesquisar
-	- Visualização
-	- Seguir/Deixar de Seguir
+actor Aluno
+actor Empresa
+actor "Coordenador (Faculdade)" as Faculdade
+actor Sistema
 
-- Postagens (Público) 	 	
-	- Criação
-	- Exclusão
-	- Interação
-	- Visualização
+rectangle "Sistema Validador de Estágio" {
 
-- Mensagens (Privado)
-	- Criação
-	- Exclusão
-	- Visualização
+  usecase (UC01: Submeter dados do estágio) as UC01
+  usecase (UC02: Confirmar dados do estágio) as UC02
+  usecase (UC03: Executar validação automática) as UC03
+  
+  usecase (Validar carga horária) as UC03_1
+  usecase (Validar duração do estágio) as UC03_2
+  usecase (Validar documentação obrigatória) as UC03_3
+  usecase (Validar existência de supervisor) as UC03_4
+  usecase (Validar seguro obrigatório) as UC03_5
+  usecase (Sugerir compatibilidade com curso) as UC03_6
 
-- Galerias
-	- Albuns
-- Blogs
-- Grupos
+  usecase (UC04: Gerar resultado da validação) as UC04
+  usecase (Aprovação automática) as UC04_1
+  usecase (Encaminhar para análise manual) as UC04_2
 
-### Criação de uma conta no sistema
+  usecase (UC05: Analisar manualmente solicitação) as UC05
 
-* Atores:
+  Aluno --> UC01
+  Empresa --> UC02
+  Faculdade --> UC05
+  Sistema --> UC03
+  Sistema --> UC04
 
-	- Usuário
-	- Sistema
+  UC01 --> UC03
+  
+  UC03 --> UC03_1 : <<include>>
+  UC03 --> UC03_2 : <<include>>
+  UC03 --> UC03_3 : <<include>>
+  UC03 --> UC03_4 : <<include>>
+  UC03 --> UC03_5 : <<include>>
+  UC03 --> UC03_6 : <<include>>
+  
+  UC03 --> UC04
+  
+  UC04 ..> UC04_1 : <<extend>>
+  UC04 ..> UC04_2 : <<extend>>
+  
+  UC04_2 --> UC05
+}
 
-- Pré-Condições:
-	- Nenhuma
+@enduml
 
-* Fluxo Básico:
-    1. Usuário fornece e-mail, senha e confirmações
-    2. Dados do Usuário são validados pelo Sistema
-    3. Dados do Usuário são encriptados pelo Sistema
-    4. Dados do Usuário são persistidos pelo Sistema
-    5. Sistema gera um link com prazo de expiração
-    6. Sistema envia e-mail de verificação, com o link, para o Usuário
-    7. Usuário confirma o e-mail antes do link expirar
-    8. Sistema confirma que o Cadastro do Usuário foi realizado com sucesso
-    9. Sistema redireciona o Usuário para a página de Entrada
+```
 
-- Fluxos Alternativos:
-	- 2a. E-mail do Usuário é inválido
-		2a1. Sistema exibe mensagem de erro
-	- 2b. Senha do Usuário não respeita regras de segurança
-		- 2b1. Sistema exibe mensagem de erro
-	- 3a. Usuário tenta confirmar o e-mail depois de o link expirar
-		- 3a1. Sistema sugere que o Usuário realize um novo Cadastro
+### 1.1 Visão Geral e Dinâmica do Sistema
 
-### Entrada do usuário no sistema
+O diagrama de casos de uso estrutura o fluxo do **Sistema Validador de Estágio**, integrando discentes, o setor corporativo e a instituição de ensino.
 
-- Atores:
-	- Usuário
-	- Sistema
+* **Papel dos Atores**:
+* **Aluno**: Inicia o processo inserindo dados do contrato e documentos iniciais.
+* **Empresa**: Atua como agente de conformidade, validando a exatidão das informações.
+* **Sistema**: Núcleo de processamento lógico que verifica normas regulatórias e toma decisões de roteamento.
+* **Coordenador**: Trata exceções e casos que exigem discernimento humano para aprovação ou indeferimento.
 
-- Pré-Condições:
-	Usuário deve estar cadastrado
 
-- Fluxo Básico:
-    - 1. Usuário fornece e-mail e senha
-	- 2. Sistema autentica o Usuário
-	- 3. Sistema redireciona o Usuário para a página inicial
 
-- Fluxos Alternativos:
-	- 2a. Dados do Usuário Inválidos
-		- 2a1. Sistema exibe mensagem de erro
-	- 3a. Primeio acesso do Usuário
-		- 3a1. Sistema redireciona o Usuário para a página de edição de perfil
+---
+
+## 2. Diagrama de Classes
+
+```plantuml
+@startuml Diagrama_Classes_Validador_Estagio
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+
+class Usuario {
+  - nome: String
+  - emailInstitucional: String
+  - senhaHash: String
+  - statusAtivacao: Boolean
+  + autenticar(): Boolean
+}
+
+class Estudante {
+  + abrirSolicitacao(): void
+  + enviarDocumento(): void
+  + consultarStatus(): void
+  + visualizarPendencias(): void
+}
+
+class Professor {
+  + avaliarRelatorio(): void
+  + emitirParecer(): void
+  + atribuirConceito(): void
+}
+
+class Coordenador {
+  + visualizarIndicadores(): void
+  + analisarExcecao(): void
+  + registrarDecisao(): void
+}
+
+class EmpresaParceira {
+  - nomeOrganizacao: String
+  - cnpj: String
+  + confirmarDados(): void
+  + realizarAssinatura(): void
+}
+
+class SolicitacaoEstagio {
+  - id: Long
+  - dataAbertura: Date
+  - statusAtual: String
+  - scoreConformidade: Float
+  + iniciarProcesso(): void
+  + atualizarStatus(): void
+}
+
+class Documento {
+  - id: Long
+  - tipo: String
+  - nomeArquivo: String
+  - dataEnvio: Date
+  - status: String
+  + anexar(): void
+  + validarAssinatura(): void
+}
+
+class ValidacaoAutomatica {
+  + executarValidacao(solicitacao: SolicitacaoEstagio): void
+  + detectarInconsistencias(): void
+  + calcularScore(): Float
+}
+
+class Pendencia {
+  - id: Long
+  - descricao: String
+  - estadoResolucao: String
+}
+
+Usuario <|-- Estudante
+Usuario <|-- Professor
+Usuario <|-- Coordenador
+
+Estudante "1" -- "0..*" SolicitacaoEstagio : solicita >
+EmpresaParceira "1" -- "0..*" SolicitacaoEstagio : confirma >
+SolicitacaoEstagio "1" *-- "1..*" Documento : contém >
+SolicitacaoEstagio "1" *-- "0..*" Pendencia : possui >
+ValidacaoAutomatica "1" ..> "1" SolicitacaoEstagio : analisa >
+
+@enduml
+
+```
+
+### 2.1 Descrição das Classes
+
+* **Usuario**: Classe base com dados comuns de autenticação (nome, e-mail institucional, senha).
+* **Estudante**: Aluno que solicita a validação, envia documentos e consulta status.
+* **Professor**: Docente responsável pela análise acadêmica e atribuição de conceitos.
+* **Coordenador**: Responsável pelo acompanhamento gerencial e análise de exceções.
+* **SolicitacaoEstagio**: Classe central que armazena a data de abertura, status atual e score de conformidade.
+* **ValidacaoAutomatica**: Módulo que aplica regras legais aos documentos e detecta inconsistências.
+
+---
+
+## 3. Versionamento
+
+| Data | Versão | Descrição | Autor(es) |
+| --- | --- | --- | --- |
+| 16/04/2026 | 1.0 | Definição inicial das classes e casos de uso principais | Lucas Calil |
+| 17/04/2026 | 1.1 | Inclusão de validação automática e notificações | Lucas Calil |
+| 15/05/2026 | 2.0 | Ajustes finais nos relacionamentos e consolidação | Marco Antonio e Lucas Calil |
+
+```
+
+```
