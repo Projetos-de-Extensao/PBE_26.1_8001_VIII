@@ -67,7 +67,11 @@ class Documento(models.Model):
 
     solicitacao = models.ForeignKey(SolicitacaoEstagio, on_delete=models.CASCADE, related_name='documentos')
     tipo = models.CharField(max_length=100)  # Ex: TCE, Plano de Atividades
+<<<<<<< HEAD
     arquivo = models.FileField(upload_to='documentos/', null=True, blank=True)
+=======
+    nome_arquivo = models.CharField(max_length=255)
+>>>>>>> 721beea9b8ef3518ddc1c3c7d237a09c592b88db
     data_envio = models.DateField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_DOC, default='ENVIADO')
 

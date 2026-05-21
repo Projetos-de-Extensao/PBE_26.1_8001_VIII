@@ -1,4 +1,5 @@
 from django.shortcuts import render
+<<<<<<< HEAD
 from rest_framework import viewsets
 from .models import (
     Usuario,
@@ -53,3 +54,7 @@ class PendenciaViewSet(viewsets.ModelViewSet):
     queryset = Pendencia.objects.all()
     serializer_class = PendenciaSerializer
 
+=======
+
+# Create your views here.
+>>>>>>> 721beea9b8ef3518ddc1c3c7d237a09c592b88db

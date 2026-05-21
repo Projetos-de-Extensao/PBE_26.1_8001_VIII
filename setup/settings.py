@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+<<<<<<< HEAD
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 STATIC_URL = '/static/'
@@ -18,6 +19,11 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+=======
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
+>>>>>>> 721beea9b8ef3518ddc1c3c7d237a09c592b88db
 
 
 # Quick-start development settings - unsuitable for production
@@ -41,9 +47,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+<<<<<<< HEAD
     
     'core', 
     'rest_framework',
+=======
+    'core', 
+>>>>>>> 721beea9b8ef3518ddc1c3c7d237a09c592b88db
 ]
 
 MIDDLEWARE = [
