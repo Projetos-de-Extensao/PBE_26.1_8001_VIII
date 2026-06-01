@@ -1,60 +1,67 @@
-from django.shortcuts import render
-<<<<<<< HEAD
+from django.http import HttpResponse
 from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
 from .models import (
-    Usuario,
-    Estudante,
-    Professor,
+    Usuario, 
+    Estudante, 
+    Professor, 
     Coordenador,
-    EmpresaParceira,
-    SolicitacaoEstagio,
-    Documento,
+    EmpresaParceira, 
+    SolicitacaoEstagio, 
+    Documento, 
     Pendencia
 )
-
 from .serializers import (
-    UsuarioSerializer,
-    EstudanteSerializer,
+    UsuarioSerializer, 
+    EstudanteSerializer, 
     ProfessorSerializer,
-    CoordenadorSerializer,
+    CoordenadorSerializer, 
     EmpresaParceiraSerializer,
-    SolicitacaoEstagioSerializer,
-    DocumentoSerializer,
+    SolicitacaoEstagioSerializer, 
+    DocumentoSerializer, 
     PendenciaSerializer
 )
 
-# Create your views here.
-
-from .models import ( Usuario, Estudante, Professor, Coordenador, EmpresaParceira, SolicitacaoEstagio, Documento)
-from .serializers import ( UsuarioSerializer, EstudanteSerializer, ProfessorSerializer, CoordenadorSerializer, EmpresaParceiraSerializer, SolicitacaoEstagioSerializer, DocumentoSerializer)
 def home(request):
-    return render(request, 'home.html')
+    return HttpResponse("API de Estágios Funcionando")
+
 class UsuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
+    permission_classes = [IsAuthenticated]
+
 class EstudanteViewSet(viewsets.ModelViewSet):
-    queryset = Estudante.objects.all()
+    queryset = Estudante.objects.select_related('usuario').all()
     serializer_class = EstudanteSerializer
+    permission_classes = [IsAuthenticated]
+
 class ProfessorViewSet(viewsets.ModelViewSet):
-    queryset = Professor.objects.all()
+    queryset = Professor.objects.select_related('usuario').all()
     serializer_class = ProfessorSerializer
+    permission_classes = [IsAuthenticated]
+
 class CoordenadorViewSet(viewsets.ModelViewSet):
-    queryset = Coordenador.objects.all()
+    queryset = Coordenador.objects.select_related('usuario').all()
     serializer_class = CoordenadorSerializer
-class EmpresaParceiraViewSet(viewsets.ModelViewSet):    
+    permission_classes = [IsAuthenticated]
+
+class EmpresaParceiraViewSet(viewsets.ModelViewSet):
     queryset = EmpresaParceira.objects.all()
     serializer_class = EmpresaParceiraSerializer
+    permission_classes = [IsAuthenticated]
+
 class SolicitacaoEstagioViewSet(viewsets.ModelViewSet):
-    queryset = SolicitacaoEstagio.objects.all()
-    serializer_class = SolicitacaoEstagioSerializer             
+    queryset = SolicitacaoEstagio.objects.select_related('estudante__usuario', 'empresa').all()
+    serializer_class = SolicitacaoEstagioSerializer
+    permission_classes = [IsAuthenticated]
+
 class DocumentoViewSet(viewsets.ModelViewSet):
-    queryset = Documento.objects.all()
+    queryset = Documento.objects.select_related('solicitacao').all()
     serializer_class = DocumentoSerializer
+    permission_classes = [IsAuthenticated]
+
 class PendenciaViewSet(viewsets.ModelViewSet):
-    queryset = Pendencia.objects.all()
+    queryset = Pendencia.objects.select_related('solicitacao').all()
     serializer_class = PendenciaSerializer
+    permission_classes = [IsAuthenticated]
 
-=======
-
-# Create your views here.
->>>>>>> 721beea9b8ef3518ddc1c3c7d237a09c592b88db
