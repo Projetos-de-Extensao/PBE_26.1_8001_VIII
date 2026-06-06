@@ -3,11 +3,9 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-vssf(cp1152uge=@%%tngpn14!)rnv_+5jfnz0qh46(mtfhh$k')
-DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
-
-allowed_hosts_env = os.getenv('ALLOWED_HOSTS', '*')
-ALLOWED_HOSTS = allowed_hosts_env.split(',') if allowed_hosts_env else []
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'chave-insegura-apenas-para-dev')
+DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
