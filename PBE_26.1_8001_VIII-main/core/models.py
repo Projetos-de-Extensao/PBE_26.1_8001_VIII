@@ -83,6 +83,7 @@ class Pendencia(models.Model):
 
     solicitacao = models.ForeignKey(SolicitacaoEstagio, on_delete=models.CASCADE, related_name='pendencias')
     descricao = models.TextField()
+    data_criacao = models.DateTimeField(auto_now_add=True)
     estado_resolucao = models.CharField(max_length=20, choices=ESTADO_RESOLUCAO, default='ABERTA')
 
     def __str__(self):

@@ -49,4 +49,4 @@ class PendenciaSerializer(serializers.ModelSerializer):
     solicitacao_id = serializers.IntegerField(source='solicitacao.id', read_only=True)
     class Meta:
         model = Pendencia
-        fields = ['id', 'solicitacao', 'solicitacao_id', 'descricao', 'data_criacao', 'status']
+        fields = ['id', 'solicitacao', 'solicitacao_id', 'descricao', 'data_criacao', 'estado_resolucao']
