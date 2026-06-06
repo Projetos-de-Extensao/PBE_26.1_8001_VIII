@@ -1,0 +1,5 @@
+Django>=5.0
+djangorestframework>=3.15
+Pillow>=10.0
+django-cors-headers>=4.0
+drf-spectacular>=0.27

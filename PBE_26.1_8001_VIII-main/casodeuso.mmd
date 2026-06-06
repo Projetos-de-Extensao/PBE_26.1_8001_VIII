@@ -1,0 +1,39 @@
+@startuml
+left to right direction
+
+actor Aluno
+actor Empresa
+actor "Coordenador" as Faculdade
+
+rectangle "Sistema Validador de Estágio" {
+
+  ' -------- ENTRADA DE DADOS --------
+  Aluno --> (Submeter dados do estágio)
+  Empresa --> (Confirmar dados do estágio)
+
+  ' -------- EXECUÇÃO AUTOMÁTICA --------
+  (Submeter dados do estágio) --> (Executar validação automática)
+
+  ' -------- VALIDAÇÕES --------
+  (Executar validação automática) --> (Validar carga horária) : <<include>>
+  (Executar validação automática) --> (Validar duração do estágio) : <<include>>
+  (Executar validação automática) --> (Validar documentação obrigatória) : <<include>>
+  (Executar validação automática) --> (Validar existência de supervisor) : <<include>>
+  (Executar validação automática) --> (Validar seguro obrigatório) : <<include>>
+
+  ' -------- REGRAS SEMI-AUTOMÁTICAS --------
+  (Executar validação automática) --> (Sugerir compatibilidade com curso) : <<include>>
+
+  ' -------- RESULTADO --------
+  (Executar validação automática) --> (Gerar resultado da validação)
+
+  (Gerar resultado da validação) --> (Aprovação automática) : <<extend>>
+  (Gerar resultado da validação) --> (Encaminhar para análise manual) : <<extend>>
+
+  ' -------- DECISÃO HUMANA --------
+  Faculdade --> (Analisar manualmente solicitação)
+  (Encaminhar para análise manual) --> (Analisar manualmente solicitação)
+
+}
+@enduml
+ 
