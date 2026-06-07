@@ -1,25 +1,27 @@
 from django.http import HttpResponse
+
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
+
 from .models import (
-    Usuario, 
-    Estudante, 
-    Professor, 
     Coordenador,
-    EmpresaParceira, 
-    SolicitacaoEstagio, 
-    Documento, 
-    Pendencia
+    Documento,
+    EmpresaParceira,
+    Estudante,
+    Pendencia,
+    Professor,
+    SolicitacaoEstagio,
+    Usuario,
 )
 from .serializers import (
-    UsuarioSerializer, 
-    EstudanteSerializer, 
-    ProfessorSerializer,
-    CoordenadorSerializer, 
+    CoordenadorSerializer,
+    DocumentoSerializer,
     EmpresaParceiraSerializer,
-    SolicitacaoEstagioSerializer, 
-    DocumentoSerializer, 
-    PendenciaSerializer
+    EstudanteSerializer,
+    PendenciaSerializer,
+    ProfessorSerializer,
+    SolicitacaoEstagioSerializer,
+    UsuarioSerializer,
 )
 
 def home(request):
