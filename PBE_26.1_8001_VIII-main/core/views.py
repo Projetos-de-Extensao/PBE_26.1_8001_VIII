@@ -53,17 +53,26 @@ class EmpresaParceiraViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
 class SolicitacaoEstagioViewSet(viewsets.ModelViewSet):
-    queryset = SolicitacaoEstagio.objects.select_related('estudante__usuario', 'empresa').all()
+    queryset = SolicitacaoEstagio.objects.select_related(
+        'estudante__usuario',
+        'empresa',
+    ).all()
     serializer_class = SolicitacaoEstagioSerializer
     permission_classes = [IsAuthenticated]
 
 class DocumentoViewSet(viewsets.ModelViewSet):
-    queryset = Documento.objects.select_related('solicitacao').all()
+    queryset = Documento.objects.select_related(
+        'solicitacao__estudante__usuario',
+        'solicitacao__empresa',
+    ).all()
     serializer_class = DocumentoSerializer
     permission_classes = [IsAuthenticated]
 
 class PendenciaViewSet(viewsets.ModelViewSet):
-    queryset = Pendencia.objects.select_related('solicitacao').all()
+    queryset = Pendencia.objects.select_related(
+        'solicitacao__estudante__usuario',
+        'solicitacao__empresa',
+    ).all()
     serializer_class = PendenciaSerializer
     permission_classes = [IsAuthenticated]
 
