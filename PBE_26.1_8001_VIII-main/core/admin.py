@@ -43,8 +43,8 @@ class CoordenadorAdmin(admin.ModelAdmin):
 
 @admin.register(EmpresaParceira)
 class EmpresaParceiraAdmin(admin.ModelAdmin):
-    list_display = ('id', 'nome_organizacao', 'cnpj')
-    search_fields = ('nome_organizacao', 'cnpj')
+    list_display = ('id', 'nome_organizacao', 'cnpj', 'supervisor')
+    search_fields = ('nome_organizacao', 'cnpj', 'supervisor')
 
 
 @admin.register(SolicitacaoEstagio)

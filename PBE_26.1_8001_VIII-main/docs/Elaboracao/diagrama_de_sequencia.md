@@ -1,87 +1,99 @@
 ---
-id: diagrama_de_casos de uso
-title: Diagrama de Casos de Uso
+id: diagrama_de_sequencia
+title: Diagrama de Sequência
 ---
 
-## Casos de Uso
+# Diagrama de Sequência
 
-### Descrição:
+Este documento apresenta fluxos principais do Sistema Validador de Estágio usando diagramas de sequência em Mermaid.
 
-- Contas
-	- Criação
-	- Entrada
-	- Alteração
-	- Recuperar Senha
-	- Exclusão Lógica
-	- Visualização
+## 1. Estudante cria solicitação de estágio
 
-- Perfis
-	- Edição
-	- Pesquisar
-	- Visualização
-	- Seguir/Deixar de Seguir
+```mermaid
+sequenceDiagram
+    actor Estudante
+    participant API
+    participant SolicitacaoEstagio
 
-- Postagens (Público) 	 	
-	- Criação
-	- Exclusão
-	- Interação
-	- Visualização
+    Estudante->>API: Envia dados da solicitação de estágio
+    API->>API: Valida estudante, empresa e status
+    API->>SolicitacaoEstagio: Cria solicitação com status ABERTO
+    SolicitacaoEstagio-->>API: Retorna solicitação criada
+    API-->>Estudante: Retorna dados da solicitação
+```
 
-- Mensagens (Privado)
-	- Criação
-	- Exclusão
-	- Visualização
+## 2. Estudante envia documento
 
-- Galerias
-	- Albuns
-- Blogs
-- Grupos
+```mermaid
+sequenceDiagram
+    actor Estudante
+    participant API
+    participant SolicitacaoEstagio
+    participant Documento
 
-### Criação de uma conta no sistema
+    Estudante->>API: Envia documento da solicitação
+    API->>SolicitacaoEstagio: Consulta solicitação vinculada
+    SolicitacaoEstagio-->>API: Retorna solicitação
+    API->>Documento: Registra arquivo e tipo do documento
+    Documento-->>API: Retorna documento com status ENVIADO
+    API-->>Estudante: Confirma envio do documento
+```
 
-* Atores:
+## 3. Coordenador analisa solicitação
 
-	- Usuário
-	- Sistema
+```mermaid
+sequenceDiagram
+    actor Coordenador
+    participant API
+    participant SolicitacaoEstagio
+    participant Documento
+    participant Pendencia
 
-- Pré-Condições:
-	- Nenhuma
+    Coordenador->>API: Solicita detalhes da solicitação
+    API->>SolicitacaoEstagio: Busca dados da solicitação
+    API->>Documento: Busca documentos vinculados
+    API->>Pendencia: Busca pendências vinculadas
+    SolicitacaoEstagio-->>API: Retorna dados principais
+    Documento-->>API: Retorna documentos
+    Pendencia-->>API: Retorna pendências
+    API-->>Coordenador: Exibe informações para análise
+```
 
-* Fluxo Básico:
-    1. Usuário fornece e-mail, senha e confirmações
-    2. Dados do Usuário são validados pelo Sistema
-    3. Dados do Usuário são encriptados pelo Sistema
-    4. Dados do Usuário são persistidos pelo Sistema
-    5. Sistema gera um link com prazo de expiração
-    6. Sistema envia e-mail de verificação, com o link, para o Usuário
-    7. Usuário confirma o e-mail antes do link expirar
-    8. Sistema confirma que o Cadastro do Usuário foi realizado com sucesso
-    9. Sistema redireciona o Usuário para a página de Entrada
+## 4. Coordenador aprova solicitação
 
-- Fluxos Alternativos:
-	- 2a. E-mail do Usuário é inválido
-		2a1. Sistema exibe mensagem de erro
-	- 2b. Senha do Usuário não respeita regras de segurança
-		- 2b1. Sistema exibe mensagem de erro
-	- 3a. Usuário tenta confirmar o e-mail depois de o link expirar
-		- 3a1. Sistema sugere que o Usuário realize um novo Cadastro
+```mermaid
+sequenceDiagram
+    actor Coordenador
+    participant API
+    participant SolicitacaoEstagio
 
-### Entrada do usuário no sistema
+    Coordenador->>API: Altera status para APROVADO
+    API->>API: Valida status permitido
+    API->>SolicitacaoEstagio: Atualiza status_atual
+    SolicitacaoEstagio-->>API: Retorna solicitação aprovada
+    API-->>Coordenador: Confirma aprovação
+```
 
-- Atores:
-	- Usuário
-	- Sistema
+## 5. Coordenador rejeita solicitação ou cria pendência
 
-- Pré-Condições:
-	Usuário deve estar cadastrado
+```mermaid
+sequenceDiagram
+    actor Coordenador
+    participant API
+    participant SolicitacaoEstagio
+    participant Pendencia
 
-- Fluxo Básico:
-    - 1. Usuário fornece e-mail e senha
-	- 2. Sistema autentica o Usuário
-	- 3. Sistema redireciona o Usuário para a página inicial
-
-- Fluxos Alternativos:
-	- 2a. Dados do Usuário Inválidos
-		- 2a1. Sistema exibe mensagem de erro
-	- 3a. Primeio acesso do Usuário
-		- 3a1. Sistema redireciona o Usuário para a página de edição de perfil
+    alt Solicitação recusada
+        Coordenador->>API: Altera status para RECUSADO
+        API->>SolicitacaoEstagio: Atualiza status_atual
+        SolicitacaoEstagio-->>API: Retorna solicitação recusada
+        API-->>Coordenador: Confirma recusa
+    else Solicitação com pendência
+        Coordenador->>API: Registra pendência da solicitação
+        API->>Pendencia: Cria pendência ABERTA
+        API->>SolicitacaoEstagio: Atualiza status para PENDENTE
+        Pendencia-->>API: Retorna pendência criada
+        SolicitacaoEstagio-->>API: Retorna solicitação pendente
+        API-->>Coordenador: Confirma registro da pendência
+    end
+```

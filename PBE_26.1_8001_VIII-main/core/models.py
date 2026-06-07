@@ -32,6 +32,7 @@ class Coordenador(models.Model):
 class EmpresaParceira(models.Model):
     nome_organizacao = models.CharField(max_length=255)
     cnpj = models.CharField(max_length=18, unique=True)
+    supervisor = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return self.nome_organizacao

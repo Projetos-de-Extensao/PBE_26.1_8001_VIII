@@ -1,3 +1,85 @@
-from django.test import TestCase
+from django.contrib.auth import get_user_model
+from rest_framework import status
+from rest_framework.test import APITestCase
 
-# Create your tests here.
+from .models import EmpresaParceira, Estudante, SolicitacaoEstagio
+
+
+class SolicitacaoEstagioAPITestCase(APITestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.user = User.objects.create_user(
+            username='estudante_teste',
+            email='estudante@example.com',
+            password='senha-teste',
+        )
+        self.estudante = Estudante.objects.create(usuario=self.user)
+        self.empresa = EmpresaParceira.objects.create(
+            nome_organizacao='Empresa Teste',
+            cnpj='12345678000190',
+            supervisor='Supervisor Teste',
+        )
+        self.client.force_authenticate(user=self.user)
+
+    def test_cria_solicitacao_estagio(self):
+        payload = {
+            'estudante': self.estudante.id,
+            'empresa': self.empresa.id,
+            'carga_horaria': 30,
+            'duracao_contrato': '6 meses',
+            'supervisor': 'Supervisor do Estagio',
+            'seguro_obrigatorio': True,
+        }
+
+        response = self.client.post('/api/solicitacoes/', payload, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(SolicitacaoEstagio.objects.count(), 1)
+        self.assertEqual(response.data['carga_horaria'], 30)
+        self.assertEqual(response.data['status_atual'], 'ABERTO')
+
+    def test_lista_solicitacoes_estagio(self):
+        SolicitacaoEstagio.objects.create(
+            estudante=self.estudante,
+            empresa=self.empresa,
+            carga_horaria=20,
+            duracao_contrato='4 meses',
+            supervisor='Supervisor do Estagio',
+            seguro_obrigatorio=True,
+        )
+
+        response = self.client.get('/api/solicitacoes/')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 1)
+        self.assertEqual(len(response.data['results']), 1)
+
+    def test_altera_status_solicitacao_estagio(self):
+        solicitacao = SolicitacaoEstagio.objects.create(
+            estudante=self.estudante,
+            empresa=self.empresa,
+            carga_horaria=20,
+            duracao_contrato='4 meses',
+            supervisor='Supervisor do Estagio',
+            seguro_obrigatorio=True,
+        )
+
+        response = self.client.patch(
+            f'/api/solicitacoes/{solicitacao.id}/',
+            {'status_atual': 'APROVADO'},
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        solicitacao.refresh_from_db()
+        self.assertEqual(solicitacao.status_atual, 'APROVADO')
+
+    def test_acesso_nao_autenticado_retorna_401_ou_403(self):
+        self.client.force_authenticate(user=None)
+
+        response = self.client.get('/api/solicitacoes/')
+
+        self.assertIn(
+            response.status_code,
+            [status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN],
+        )

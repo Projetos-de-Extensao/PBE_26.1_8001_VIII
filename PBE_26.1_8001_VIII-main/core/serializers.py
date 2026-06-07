@@ -35,7 +35,7 @@ class CoordenadorSerializer(serializers.ModelSerializer):
 class EmpresaParceiraSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmpresaParceira
-        fields = ['id', 'nome_organizacao', 'cnpj']
+        fields = ['id', 'nome_organizacao', 'cnpj', 'supervisor']
 
     def validate_cnpj(self, value):
         cnpj = re.sub(r'\D', '', value or '')
