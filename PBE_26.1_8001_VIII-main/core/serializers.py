@@ -52,6 +52,30 @@ class SolicitacaoEstagioSerializer(serializers.ModelSerializer):
     class Meta:
         model = SolicitacaoEstagio
         fields = ['id', 'data_abertura', 'status_atual', 'score_conformidade', 'estudante', 'estudante_nome', 'empresa', 'empresa_nome']
+
+    def validate(self, attrs):
+        errors = {}
+
+        if self.instance is None and not attrs.get('estudante'):
+            errors['estudante'] = 'O estudante é obrigatório.'
+        elif attrs.get('estudante') is None and 'estudante' in attrs:
+            errors['estudante'] = 'O estudante é obrigatório.'
+
+        if self.instance is None and not attrs.get('empresa'):
+            errors['empresa'] = 'A empresa é obrigatória.'
+        elif attrs.get('empresa') is None and 'empresa' in attrs:
+            errors['empresa'] = 'A empresa é obrigatória.'
+
+        status_atual = attrs.get('status_atual')
+        status_permitidos = {status for status, _ in SolicitacaoEstagio.STATUS_CHOICES}
+
+        if status_atual is not None and status_atual not in status_permitidos:
+            errors['status_atual'] = 'Status inválido para solicitação de estágio.'
+
+        if errors:
+            raise serializers.ValidationError(errors)
+
+        return attrs
 class DocumentoSerializer(serializers.ModelSerializer):
     solicitacao_id = serializers.IntegerField(source='solicitacao.id', read_only=True)
     class Meta:
