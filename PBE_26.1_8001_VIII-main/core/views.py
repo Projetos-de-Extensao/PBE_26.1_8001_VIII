@@ -13,6 +13,7 @@ from .models import (
     SolicitacaoEstagio,
     Usuario,
 )
+from .permissions import IsCoordenador, IsEstudante, IsProfessor
 from .serializers import (
     CoordenadorSerializer,
     DocumentoSerializer,
@@ -30,27 +31,27 @@ def home(request):
 class UsuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsCoordenador]
 
 class EstudanteViewSet(viewsets.ModelViewSet):
     queryset = Estudante.objects.select_related('usuario').all()
     serializer_class = EstudanteSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsEstudante]
 
 class ProfessorViewSet(viewsets.ModelViewSet):
     queryset = Professor.objects.select_related('usuario').all()
     serializer_class = ProfessorSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsProfessor]
 
 class CoordenadorViewSet(viewsets.ModelViewSet):
     queryset = Coordenador.objects.select_related('usuario').all()
     serializer_class = CoordenadorSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsCoordenador]
 
 class EmpresaParceiraViewSet(viewsets.ModelViewSet):
     queryset = EmpresaParceira.objects.all()
     serializer_class = EmpresaParceiraSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsCoordenador]
 
 class SolicitacaoEstagioViewSet(viewsets.ModelViewSet):
     queryset = SolicitacaoEstagio.objects.select_related(
@@ -58,7 +59,7 @@ class SolicitacaoEstagioViewSet(viewsets.ModelViewSet):
         'empresa',
     ).all()
     serializer_class = SolicitacaoEstagioSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsEstudante | IsProfessor | IsCoordenador]
 
 class DocumentoViewSet(viewsets.ModelViewSet):
     queryset = Documento.objects.select_related(
@@ -66,7 +67,7 @@ class DocumentoViewSet(viewsets.ModelViewSet):
         'solicitacao__empresa',
     ).all()
     serializer_class = DocumentoSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsEstudante | IsProfessor | IsCoordenador]
 
 class PendenciaViewSet(viewsets.ModelViewSet):
     queryset = Pendencia.objects.select_related(
@@ -74,5 +75,5 @@ class PendenciaViewSet(viewsets.ModelViewSet):
         'solicitacao__empresa',
     ).all()
     serializer_class = PendenciaSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsEstudante | IsProfessor | IsCoordenador]
 
