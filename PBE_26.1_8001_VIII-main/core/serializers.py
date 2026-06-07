@@ -52,6 +52,27 @@ class SolicitacaoEstagioSerializer(serializers.ModelSerializer):
     class Meta:
         model = SolicitacaoEstagio
         fields = ['id', 'data_abertura', 'status_atual', 'score_conformidade', 'estudante', 'estudante_nome', 'empresa', 'empresa_nome']
+        extra_kwargs = {
+            'estudante': {
+                'error_messages': {
+                    'required': 'O estudante é obrigatório.',
+                    'null': 'O estudante é obrigatório.',
+                    'does_not_exist': 'Estudante informado não existe.',
+                },
+            },
+            'empresa': {
+                'error_messages': {
+                    'required': 'A empresa é obrigatória.',
+                    'null': 'A empresa é obrigatória.',
+                    'does_not_exist': 'Empresa informada não existe.',
+                },
+            },
+            'status_atual': {
+                'error_messages': {
+                    'invalid_choice': 'Status inválido para solicitação de estágio.',
+                },
+            },
+        }
 
     def validate(self, attrs):
         errors = {}
