@@ -49,8 +49,19 @@ class EmpresaParceiraAdmin(admin.ModelAdmin):
 
 @admin.register(SolicitacaoEstagio)
 class SolicitacaoEstagioAdmin(admin.ModelAdmin):
-    list_display = ('id', 'estudante', 'empresa', 'status_atual', 'score_conformidade', 'data_abertura')
-    list_filter = ('status_atual', 'data_abertura', 'empresa')
+    list_display = (
+        'id',
+        'estudante',
+        'empresa',
+        'status_atual',
+        'carga_horaria',
+        'duracao_contrato',
+        'supervisor',
+        'seguro_obrigatorio',
+        'score_conformidade',
+        'data_abertura',
+    )
+    list_filter = ('status_atual', 'seguro_obrigatorio', 'data_abertura', 'empresa')
     search_fields = (
         'estudante__usuario__username',
         'estudante__usuario__email',
@@ -58,6 +69,8 @@ class SolicitacaoEstagioAdmin(admin.ModelAdmin):
         'estudante__usuario__last_name',
         'empresa__nome_organizacao',
         'empresa__cnpj',
+        'supervisor',
+        'duracao_contrato',
     )
 
 

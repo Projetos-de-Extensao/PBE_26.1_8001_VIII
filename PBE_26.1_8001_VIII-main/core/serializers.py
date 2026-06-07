@@ -51,7 +51,20 @@ class SolicitacaoEstagioSerializer(serializers.ModelSerializer):
     empresa_nome = serializers.CharField(source='empresa.nome_organizacao', read_only=True)
     class Meta:
         model = SolicitacaoEstagio
-        fields = ['id', 'data_abertura', 'status_atual', 'score_conformidade', 'estudante', 'estudante_nome', 'empresa', 'empresa_nome']
+        fields = [
+            'id',
+            'data_abertura',
+            'status_atual',
+            'score_conformidade',
+            'carga_horaria',
+            'duracao_contrato',
+            'supervisor',
+            'seguro_obrigatorio',
+            'estudante',
+            'estudante_nome',
+            'empresa',
+            'empresa_nome',
+        ]
         extra_kwargs = {
             'estudante': {
                 'error_messages': {

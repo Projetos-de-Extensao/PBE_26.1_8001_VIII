@@ -49,6 +49,10 @@ class SolicitacaoEstagio(models.Model):
     data_abertura = models.DateField(auto_now_add=True)
     status_atual = models.CharField(max_length=20, choices=STATUS_CHOICES, default='ABERTO')
     score_conformidade = models.FloatField(default=0.0)
+    carga_horaria = models.PositiveIntegerField(default=0)
+    duracao_contrato = models.CharField(max_length=100, blank=True)
+    supervisor = models.CharField(max_length=255, blank=True)
+    seguro_obrigatorio = models.BooleanField(default=False)
     
     # Relacionamentos (As chaves estrangeiras que ligam as tabelas)
     estudante = models.ForeignKey(Estudante, on_delete=models.CASCADE, related_name='solicitacoes')
