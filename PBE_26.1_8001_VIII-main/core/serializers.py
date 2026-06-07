@@ -1,3 +1,5 @@
+import re
+
 from rest_framework import serializers
 
 from .models import (
@@ -34,6 +36,16 @@ class EmpresaParceiraSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmpresaParceira
         fields = ['id', 'nome_organizacao', 'cnpj']
+
+    def validate_cnpj(self, value):
+        cnpj = re.sub(r'\D', '', value or '')
+
+        if len(cnpj) != 14:
+            raise serializers.ValidationError(
+                'CNPJ inválido. Informe um CNPJ com 14 dígitos.'
+            )
+
+        return cnpj
 class SolicitacaoEstagioSerializer(serializers.ModelSerializer):
     estudante_nome = serializers.CharField(source='estudante.usuario.get_full_name', read_only=True)
     empresa_nome = serializers.CharField(source='empresa.nome_organizacao', read_only=True)
