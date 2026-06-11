@@ -107,6 +107,32 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
 }
 
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Sistema Validador de Estágio API',
+    'DESCRIPTION': (
+        'API para cadastro, validação e acompanhamento de solicitações de estágio. '
+        'Inclui autenticação JWT, controle de permissões por perfil, documentos, '
+        'pendências, histórico de status e auditoria.'
+    ),
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'TAGS': [
+        {'name': 'Autenticação', 'description': 'Obtenção e renovação de tokens JWT.'},
+        {'name': 'Usuários e Perfis', 'description': 'Usuários, estudantes, professores e coordenadores.'},
+        {'name': 'Empresas', 'description': 'Empresas parceiras e supervisores responsáveis.'},
+        {'name': 'Solicitações', 'description': 'Solicitações de estágio e fluxo de validação.'},
+        {'name': 'Documentos', 'description': 'Documentos enviados pelos estudantes.'},
+        {'name': 'Pendências', 'description': 'Pendências identificadas durante a análise.'},
+        {'name': 'Auditoria', 'description': 'Histórico de ações relevantes no sistema.'},
+    ],
+    'ENUM_NAME_OVERRIDES': {
+        'StatusSolicitacaoEnum': 'core.models.SolicitacaoEstagio.STATUS_CHOICES',
+        'StatusDocumentoEnum': 'core.models.Documento.STATUS_DOC',
+        'EstadoResolucaoPendenciaEnum': 'core.models.Pendencia.ESTADO_RESOLUCAO',
+        'AcaoAuditoriaEnum': 'core.models.RegistroAuditoria.ACAO_CHOICES',
+    },
+}
+
 CORS_ALLOWED_ORIGINS = os.getenv(
     'CORS_ALLOWED_ORIGINS',
     'http://localhost:3000,http://127.0.0.1:3000',

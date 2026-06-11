@@ -2,10 +2,670 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Sistema de Estágio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Validador de Estagio</title>
+    <style>
+        :root {
+            --bg: #f4f7fb;
+            --panel: #ffffff;
+            --soft: #eef4ff;
+            --text: #172033;
+            --muted: #66738a;
+            --line: #dce5f2;
+            --primary: #2357d8;
+            --primary-dark: #173f9f;
+            --success: #0d8c5a;
+            --warning: #a86513;
+            --danger: #b42318;
+            --shadow: 0 20px 48px rgba(23, 32, 51, 0.09);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(35, 87, 216, 0.16), transparent 32rem),
+                linear-gradient(180deg, #f9fbff 0%, var(--bg) 100%);
+            color: var(--text);
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .shell {
+            width: min(1180px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 28px 0 48px;
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+
+        .hero-main,
+        .hero-side,
+        .card {
+            background: rgba(255, 255, 255, 0.94);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+        }
+
+        .hero-main {
+            padding: 32px;
+        }
+
+        .hero-side {
+            padding: 22px;
+            display: grid;
+            gap: 12px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            color: var(--primary-dark);
+            font-size: 0.78rem;
+            font-weight: 900;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .eyebrow::before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--success);
+            box-shadow: 0 0 0 5px rgba(13, 140, 90, 0.13);
+        }
+
+        h1,
+        h2,
+        h3,
+        p {
+            margin-top: 0;
+        }
+
+        h1 {
+            max-width: 820px;
+            margin-bottom: 16px;
+            font-size: clamp(2rem, 5vw, 4.2rem);
+            line-height: 1.05;
+            letter-spacing: 0;
+        }
+
+        h2 {
+            margin-bottom: 6px;
+            font-size: 1.18rem;
+        }
+
+        h3 {
+            margin-bottom: 6px;
+            font-size: 1rem;
+        }
+
+        .lead {
+            max-width: 760px;
+            color: var(--muted);
+            font-size: 1.02rem;
+            line-height: 1.7;
+        }
+
+        .actions,
+        .flow {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .actions {
+            margin-top: 22px;
+        }
+
+        .button,
+        button {
+            min-height: 40px;
+            border: 0;
+            border-radius: 6px;
+            padding: 0 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            color: #ffffff;
+            font-weight: 850;
+            cursor: pointer;
+        }
+
+        .button.secondary {
+            background: #e8eef9;
+            color: var(--text);
+        }
+
+        .flow {
+            display: grid;
+            grid-template-columns: 1fr;
+        }
+
+        .flow-step {
+            display: grid;
+            grid-template-columns: 34px 1fr;
+            gap: 10px;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: #fbfdff;
+        }
+
+        .flow-step strong {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: var(--soft);
+            color: var(--primary-dark);
+        }
+
+        .stats,
+        .grid,
+        .form-grid {
+            display: grid;
+            gap: 14px;
+        }
+
+        .stats {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            margin-bottom: 18px;
+        }
+
+        .stat {
+            padding: 18px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: var(--panel);
+        }
+
+        .stat span {
+            color: var(--muted);
+            font-size: 0.78rem;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+
+        .stat strong {
+            display: block;
+            margin-top: 8px;
+            font-size: 2rem;
+        }
+
+        .grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            align-items: start;
+        }
+
+        .card {
+            padding: 20px;
+        }
+
+        .full {
+            grid-column: 1 / -1;
+        }
+
+        .card p {
+            color: var(--muted);
+            line-height: 1.55;
+        }
+
+        form {
+            display: grid;
+            gap: 12px;
+        }
+
+        .form-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        label {
+            display: grid;
+            gap: 6px;
+            color: var(--muted);
+            font-size: 0.82rem;
+            font-weight: 850;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            min-height: 40px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: 9px 10px;
+            background: #ffffff;
+            color: var(--text);
+            font: inherit;
+        }
+
+        textarea {
+            min-height: 86px;
+            resize: vertical;
+        }
+
+        .checkline {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text);
+        }
+
+        .checkline input {
+            width: 18px;
+            min-height: 18px;
+        }
+
+        .messages {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .message {
+            padding: 12px 14px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: #ffffff;
+        }
+
+        .message.success {
+            border-color: rgba(13, 140, 90, 0.35);
+            background: #ecfdf5;
+            color: #075c3c;
+        }
+
+        .message.error {
+            border-color: rgba(180, 35, 24, 0.35);
+            background: #fff3f2;
+            color: #8d1d16;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+        }
+
+        table {
+            width: 100%;
+            min-width: 860px;
+            border-collapse: collapse;
+            background: #ffffff;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--line);
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #f7faff;
+            color: var(--muted);
+            font-size: 0.76rem;
+            text-transform: uppercase;
+        }
+
+        tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .badge {
+            display: inline-flex;
+            padding: 5px 9px;
+            border-radius: 999px;
+            background: #edf2ff;
+            color: var(--primary-dark);
+            font-size: 0.76rem;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .badge.aprovado {
+            background: #ecfdf5;
+            color: var(--success);
+        }
+
+        .badge.recusado {
+            background: #fff3f2;
+            color: var(--danger);
+        }
+
+        .badge.pendente {
+            background: #fff7e6;
+            color: var(--warning);
+        }
+
+        .empty {
+            padding: 22px;
+            border: 1px dashed var(--line);
+            border-radius: 8px;
+            background: #fbfdff;
+            color: var(--muted);
+            text-align: center;
+        }
+
+        @media (max-width: 900px) {
+            .hero,
+            .stats,
+            .grid,
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-main {
+                padding: 24px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Sistema de Estágio</h1>
-    <p>Minha página HTML conectada com Django.</p>
+    <main class="shell">
+        <section class="hero">
+            <div class="hero-main">
+                <span class="eyebrow">Django REST conectado</span>
+                <h1>Sistema Validador de Estagio</h1>
+                <p class="lead">
+                    Painel web para demonstrar o backend funcionando. Cadastre dados,
+                    abra solicitacoes, envie documentos e acompanhe pendencias usando
+                    os models reais do projeto.
+                </p>
+                <div class="actions">
+                    <a class="button" href="/api/">Abrir API</a>
+                    <a class="button secondary" href="/admin/">Admin Django</a>
+                    <a class="button secondary" href="/api/docs/">Swagger</a>
+                    <a class="button secondary" href="/api/token/">JWT</a>
+                </div>
+            </div>
+
+            <aside class="hero-side">
+                <div>
+                    <h2>Roteiro de demonstracao</h2>
+                    <p>Um caminho simples para apresentar o sistema em sala.</p>
+                </div>
+                <div class="flow">
+                    <div class="flow-step"><strong>1</strong><span>Cadastre estudante elegivel e empresa parceira.</span></div>
+                    <div class="flow-step"><strong>2</strong><span>Abra uma solicitacao com carga horaria, contrato e seguro.</span></div>
+                    <div class="flow-step"><strong>3</strong><span>Anexe documentos e registre pendencias quando necessario.</span></div>
+                    <div class="flow-step"><strong>4</strong><span>Acompanhe status, historico e API pelo Swagger.</span></div>
+                </div>
+            </aside>
+        </section>
+
+        {% if messages %}
+            <section class="messages">
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </section>
+        {% endif %}
+
+        <section class="stats">
+            <div class="stat"><span>Estudantes</span><strong>{{ total_estudantes }}</strong></div>
+            <div class="stat"><span>Empresas</span><strong>{{ total_empresas }}</strong></div>
+            <div class="stat"><span>Solicitacoes</span><strong>{{ total_solicitacoes }}</strong></div>
+            <div class="stat"><span>Pendencias abertas</span><strong>{{ total_pendencias_abertas }}</strong></div>
+        </section>
+
+        <section class="grid">
+            <article class="card">
+                <h2>Cadastrar estudante</h2>
+                <p>Cria um usuario simples e vincula ao perfil de estudante.</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="criar_estudante">
+                    <div class="form-grid">
+                        <label>Nome completo<input name="nome" placeholder="Ex: Ana Silva" required></label>
+                        <label>E-mail<input name="email" type="email" placeholder="ana@email.com" required></label>
+                    </div>
+                    <div class="form-grid">
+                        <label>Curso<input name="curso" placeholder="Ex: Sistemas de Informacao"></label>
+                        <label>Matricula<input name="matricula" placeholder="Ex: 20260001"></label>
+                    </div>
+                    <label>Username opcional<input name="username" placeholder="Se vazio, usa o e-mail"></label>
+                    <button type="submit">Criar estudante</button>
+                </form>
+            </article>
+
+            <article class="card">
+                <h2>Cadastrar empresa</h2>
+                <p>Registra empresa parceira e supervisor principal.</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="criar_empresa">
+                    <div class="form-grid">
+                        <label>Nome da empresa<input name="nome_organizacao" placeholder="Ex: Tech Estagios LTDA" required></label>
+                        <label>CNPJ<input name="cnpj" placeholder="00.000.000/0001-00" required></label>
+                    </div>
+                    <label>Supervisor<input name="supervisor" placeholder="Ex: Carla Mendes"></label>
+                    <button type="submit">Criar empresa</button>
+                </form>
+            </article>
+
+            <article class="card">
+                <h2>Nova solicitacao</h2>
+                <p>Abre uma solicitacao com os campos principais do caso de uso.</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="criar_solicitacao">
+                    <div class="form-grid">
+                        <label>
+                            Estudante
+                            <select name="estudante" required>
+                                <option value="">Selecione</option>
+                                {% for estudante in estudantes %}
+                                    <option value="{{ estudante.id }}">{{ estudante.usuario.get_full_name|default:estudante.usuario.username }}</option>
+                                {% endfor %}
+                            </select>
+                        </label>
+                        <label>
+                            Empresa
+                            <select name="empresa" required>
+                                <option value="">Selecione</option>
+                                {% for empresa in empresas %}
+                                    <option value="{{ empresa.id }}">{{ empresa.nome_organizacao }}</option>
+                                {% endfor %}
+                            </select>
+                        </label>
+                    </div>
+                    <div class="form-grid">
+                        <label>Carga horaria semanal<input name="carga_horaria" type="number" min="1" max="44" value="30"></label>
+                        <label>Duracao do contrato<input name="duracao_contrato" placeholder="Ex: 6 meses" value="6 meses"></label>
+                    </div>
+                    <label>Supervisor do estagio<input name="supervisor" placeholder="Ex: Carla Mendes"></label>
+                    <label class="checkline"><input name="seguro_obrigatorio" type="checkbox" checked> Seguro obrigatorio confirmado</label>
+                    <button type="submit">Abrir solicitacao</button>
+                </form>
+            </article>
+
+            <article class="card">
+                <h2>Atualizar status</h2>
+                <p>Simula a analise da coordenacao.</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="atualizar_status">
+                    <div class="form-grid">
+                        <label>
+                            Solicitacao
+                            <select name="solicitacao" required>
+                                <option value="">Selecione</option>
+                                {% for solicitacao in solicitacoes %}
+                                    <option value="{{ solicitacao.id }}">#{{ solicitacao.id }} - {{ solicitacao.estudante }}</option>
+                                {% endfor %}
+                            </select>
+                        </label>
+                        <label>
+                            Novo status
+                            <select name="status_atual" required>
+                                {% for value, label in status_choices %}
+                                    <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </label>
+                    </div>
+                    <label>Justificativa de recusa, se houver<textarea name="justificativa_recusa" placeholder="Obrigatoria quando o status for recusado."></textarea></label>
+                    <button type="submit">Atualizar status</button>
+                </form>
+            </article>
+
+            <article class="card">
+                <h2>Enviar documento</h2>
+                <p>Anexa arquivos como TCE e Plano de Atividades.</p>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="criar_documento">
+                    <div class="form-grid">
+                        <label>
+                            Solicitacao
+                            <select name="solicitacao" required>
+                                <option value="">Selecione</option>
+                                {% for solicitacao in solicitacoes %}
+                                    <option value="{{ solicitacao.id }}">#{{ solicitacao.id }} - {{ solicitacao.empresa.nome_organizacao }}</option>
+                                {% endfor %}
+                            </select>
+                        </label>
+                        <label>Tipo<input name="tipo" placeholder="Ex: TCE" required></label>
+                    </div>
+                    <label>Arquivo<input name="arquivo" type="file"></label>
+                    <button type="submit">Registrar documento</button>
+                </form>
+            </article>
+
+            <article class="card">
+                <h2>Criar pendencia</h2>
+                <p>Registra uma correcao necessaria e marca a solicitacao como pendente.</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="criar_pendencia">
+                    <label>
+                        Solicitacao
+                        <select name="solicitacao" required>
+                            <option value="">Selecione</option>
+                            {% for solicitacao in solicitacoes %}
+                                <option value="{{ solicitacao.id }}">#{{ solicitacao.id }} - {{ solicitacao.estudante }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                    <label>Descricao<textarea name="descricao" placeholder="Explique o que precisa ser corrigido." required></textarea></label>
+                    <button type="submit">Criar pendencia</button>
+                </form>
+            </article>
+
+            <article class="card full">
+                <h2>Solicitacoes de estagio</h2>
+                <p>Listagem carregada diretamente do banco via ORM do Django.</p>
+                {% if solicitacoes %}
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Estudante</th>
+                                    <th>Empresa</th>
+                                    <th>Status</th>
+                                    <th>Carga</th>
+                                    <th>Duracao</th>
+                                    <th>Supervisor</th>
+                                    <th>Docs</th>
+                                    <th>Pendencias</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for solicitacao in solicitacoes %}
+                                    <tr>
+                                        <td>#{{ solicitacao.id }}</td>
+                                        <td>{{ solicitacao.estudante }}</td>
+                                        <td>{{ solicitacao.empresa.nome_organizacao }}</td>
+                                        <td>
+                                            <span class="badge {% if solicitacao.status_atual == 'APROVADO' %}aprovado{% elif solicitacao.status_atual == 'RECUSADO' %}recusado{% elif solicitacao.status_atual == 'PENDENTE' %}pendente{% endif %}">
+                                                {{ solicitacao.get_status_atual_display }}
+                                            </span>
+                                        </td>
+                                        <td>{{ solicitacao.carga_horaria }}h</td>
+                                        <td>{{ solicitacao.duracao_contrato|default:"-" }}</td>
+                                        <td>{{ solicitacao.supervisor|default:"-" }}</td>
+                                        <td>{{ solicitacao.documentos.count }}</td>
+                                        <td>{{ solicitacao.pendencias.count }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="empty">Ainda nao existem solicitacoes. Cadastre estudante, empresa e abra a primeira.</div>
+                {% endif %}
+            </article>
+
+            <article class="card">
+                <h2>Ultimos documentos</h2>
+                {% if documentos %}
+                    <div class="table-wrap">
+                        <table style="min-width: 520px;">
+                            <thead><tr><th>ID</th><th>Solicitacao</th><th>Tipo</th><th>Status</th></tr></thead>
+                            <tbody>
+                                {% for documento in documentos %}
+                                    <tr>
+                                        <td>#{{ documento.id }}</td>
+                                        <td>#{{ documento.solicitacao_id }}</td>
+                                        <td>{{ documento.tipo }}</td>
+                                        <td><span class="badge">{{ documento.get_status_display }}</span></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="empty">Nenhum documento registrado ainda.</div>
+                {% endif %}
+            </article>
+
+            <article class="card">
+                <h2>Ultimas pendencias</h2>
+                {% if pendencias %}
+                    <div class="table-wrap">
+                        <table style="min-width: 560px;">
+                            <thead><tr><th>ID</th><th>Solicitacao</th><th>Estado</th><th>Descricao</th></tr></thead>
+                            <tbody>
+                                {% for pendencia in pendencias %}
+                                    <tr>
+                                        <td>#{{ pendencia.id }}</td>
+                                        <td>#{{ pendencia.solicitacao_id }}</td>
+                                        <td><span class="badge pendente">{{ pendencia.get_estado_resolucao_display }}</span></td>
+                                        <td>{{ pendencia.descricao }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="empty">Nenhuma pendencia registrada ainda.</div>
+                {% endif %}
+            </article>
+        </section>
+    </main>
 </body>
 </html>

@@ -1,9 +1,13 @@
+from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.http import HttpResponse
+from django.shortcuts import redirect, render
 
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
+from drf_spectacular.utils import extend_schema, extend_schema_view
 
 from .auditoria import registrar_auditoria
 from .models import (
@@ -43,8 +47,163 @@ from .serializers import (
 )
 
 def home(request):
-    return HttpResponse("API de Estágios Funcionando")
+    return redirect('sistema_dashboard')
 
+
+def sistema_dashboard(request):
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        try:
+            if action == 'criar_estudante':
+                nome = request.POST.get('nome', '').strip()
+                email = request.POST.get('email', '').strip()
+                username = request.POST.get('username', '').strip() or email
+                curso = request.POST.get('curso', '').strip()
+                matricula = request.POST.get('matricula', '').strip()
+
+                if not nome or not email:
+                    messages.error(request, 'Informe nome e e-mail para cadastrar o estudante.')
+                else:
+                    first_name, *last_name = nome.split()
+                    usuario, created = get_user_model().objects.get_or_create(
+                        username=username,
+                        defaults={
+                            'email': email,
+                            'first_name': first_name,
+                            'last_name': ' '.join(last_name),
+                        },
+                    )
+                    if created:
+                        usuario.set_password('123456')
+                        usuario.save()
+
+                    Estudante.objects.get_or_create(
+                        usuario=usuario,
+                        defaults={
+                            'curso': curso,
+                            'matricula': matricula or None,
+                            'elegivel_estagio': True,
+                        },
+                    )
+                    messages.success(request, 'Estudante cadastrado para demonstracao.')
+
+            elif action == 'criar_empresa':
+                nome = request.POST.get('nome_organizacao', '').strip()
+                cnpj = request.POST.get('cnpj', '').strip()
+                supervisor = request.POST.get('supervisor', '').strip()
+
+                if not nome or not cnpj:
+                    messages.error(request, 'Informe nome e CNPJ para cadastrar a empresa.')
+                else:
+                    EmpresaParceira.objects.get_or_create(
+                        cnpj=cnpj,
+                        defaults={
+                            'nome_organizacao': nome,
+                            'supervisor': supervisor,
+                        },
+                    )
+                    messages.success(request, 'Empresa parceira cadastrada.')
+
+            elif action == 'criar_solicitacao':
+                estudante_id = request.POST.get('estudante')
+                empresa_id = request.POST.get('empresa')
+                carga_horaria = request.POST.get('carga_horaria') or 30
+                duracao_contrato = request.POST.get('duracao_contrato', '').strip() or '6 meses'
+                supervisor = request.POST.get('supervisor', '').strip() or 'Supervisor nao informado'
+                seguro_obrigatorio = request.POST.get('seguro_obrigatorio') == 'on'
+
+                if not estudante_id or not empresa_id:
+                    messages.error(request, 'Selecione estudante e empresa para criar a solicitacao.')
+                else:
+                    SolicitacaoEstagio.objects.create(
+                        estudante_id=estudante_id,
+                        empresa_id=empresa_id,
+                        carga_horaria=carga_horaria,
+                        duracao_contrato=duracao_contrato,
+                        supervisor=supervisor,
+                        seguro_obrigatorio=seguro_obrigatorio,
+                    )
+                    messages.success(request, 'Solicitacao de estagio criada com status ABERTO.')
+
+            elif action == 'atualizar_status':
+                solicitacao_id = request.POST.get('solicitacao')
+                status = request.POST.get('status_atual')
+                justificativa = request.POST.get('justificativa_recusa', '').strip()
+
+                solicitacao = SolicitacaoEstagio.objects.get(id=solicitacao_id)
+                solicitacao.status_atual = status
+                solicitacao.justificativa_recusa = justificativa
+                solicitacao.save(update_fields=['status_atual', 'justificativa_recusa'])
+                messages.success(request, 'Status da solicitacao atualizado.')
+
+            elif action == 'criar_documento':
+                solicitacao_id = request.POST.get('solicitacao')
+                tipo = request.POST.get('tipo', '').strip()
+                arquivo = request.FILES.get('arquivo')
+
+                if not solicitacao_id or not tipo:
+                    messages.error(request, 'Informe solicitacao e tipo do documento.')
+                else:
+                    Documento.objects.create(
+                        solicitacao_id=solicitacao_id,
+                        tipo=tipo,
+                        arquivo=arquivo,
+                    )
+                    messages.success(request, 'Documento registrado na solicitacao.')
+
+            elif action == 'criar_pendencia':
+                solicitacao_id = request.POST.get('solicitacao')
+                descricao = request.POST.get('descricao', '').strip()
+
+                if not solicitacao_id or not descricao:
+                    messages.error(request, 'Informe solicitacao e descricao da pendencia.')
+                else:
+                    Pendencia.objects.create(
+                        solicitacao_id=solicitacao_id,
+                        descricao=descricao,
+                    )
+                    SolicitacaoEstagio.objects.filter(id=solicitacao_id).update(status_atual='PENDENTE')
+                    messages.success(request, 'Pendencia criada e solicitacao marcada como PENDENTE.')
+
+        except Exception as exc:
+            messages.error(request, f'Nao foi possivel concluir a acao: {exc}')
+
+        return redirect('sistema_dashboard')
+
+    solicitacoes = (
+        SolicitacaoEstagio.objects
+        .select_related('estudante__usuario', 'empresa')
+        .prefetch_related('documentos', 'pendencias')
+        .order_by('-id')
+    )
+    estudantes = Estudante.objects.select_related('usuario').order_by('usuario__first_name')
+    empresas = EmpresaParceira.objects.order_by('nome_organizacao')
+    documentos = Documento.objects.select_related('solicitacao').order_by('-id')[:8]
+    pendencias = Pendencia.objects.select_related('solicitacao').order_by('-id')[:8]
+
+    context = {
+        'estudantes': estudantes,
+        'empresas': empresas,
+        'solicitacoes': solicitacoes,
+        'documentos': documentos,
+        'pendencias': pendencias,
+        'status_choices': SolicitacaoEstagio.STATUS_CHOICES,
+        'total_estudantes': estudantes.count(),
+        'total_empresas': empresas.count(),
+        'total_solicitacoes': solicitacoes.count(),
+        'total_pendencias_abertas': Pendencia.objects.filter(estado_resolucao='ABERTA').count(),
+    }
+    return render(request, 'home.html', context)
+
+@extend_schema_view(
+    list=extend_schema(summary='Listar usuários', tags=['Usuários e Perfis']),
+    retrieve=extend_schema(summary='Detalhar usuário', tags=['Usuários e Perfis']),
+    create=extend_schema(summary='Criar usuário', tags=['Usuários e Perfis']),
+    update=extend_schema(summary='Atualizar usuário', tags=['Usuários e Perfis']),
+    partial_update=extend_schema(summary='Atualizar parcialmente usuário', tags=['Usuários e Perfis']),
+    destroy=extend_schema(summary='Remover usuário', tags=['Usuários e Perfis']),
+)
 class UsuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
@@ -54,6 +213,14 @@ class UsuarioViewSet(viewsets.ModelViewSet):
     ordering_fields = ['id', 'username', 'email', 'first_name', 'last_name']
     ordering = ['id']
 
+@extend_schema_view(
+    list=extend_schema(summary='Listar estudantes', tags=['Usuários e Perfis']),
+    retrieve=extend_schema(summary='Detalhar estudante', tags=['Usuários e Perfis']),
+    create=extend_schema(summary='Criar estudante', tags=['Usuários e Perfis']),
+    update=extend_schema(summary='Atualizar estudante', tags=['Usuários e Perfis']),
+    partial_update=extend_schema(summary='Atualizar parcialmente estudante', tags=['Usuários e Perfis']),
+    destroy=extend_schema(summary='Remover estudante', tags=['Usuários e Perfis']),
+)
 class EstudanteViewSet(viewsets.ModelViewSet):
     queryset = Estudante.objects.select_related('usuario').all()
     serializer_class = EstudanteSerializer
@@ -63,6 +230,14 @@ class EstudanteViewSet(viewsets.ModelViewSet):
     ordering_fields = ['id', 'usuario__username', 'usuario__email']
     ordering = ['id']
 
+@extend_schema_view(
+    list=extend_schema(summary='Listar professores', tags=['Usuários e Perfis']),
+    retrieve=extend_schema(summary='Detalhar professor', tags=['Usuários e Perfis']),
+    create=extend_schema(summary='Criar professor', tags=['Usuários e Perfis']),
+    update=extend_schema(summary='Atualizar professor', tags=['Usuários e Perfis']),
+    partial_update=extend_schema(summary='Atualizar parcialmente professor', tags=['Usuários e Perfis']),
+    destroy=extend_schema(summary='Remover professor', tags=['Usuários e Perfis']),
+)
 class ProfessorViewSet(viewsets.ModelViewSet):
     queryset = Professor.objects.select_related('usuario').all()
     serializer_class = ProfessorSerializer
@@ -72,6 +247,14 @@ class ProfessorViewSet(viewsets.ModelViewSet):
     ordering_fields = ['id', 'usuario__username', 'usuario__email']
     ordering = ['id']
 
+@extend_schema_view(
+    list=extend_schema(summary='Listar coordenadores', tags=['Usuários e Perfis']),
+    retrieve=extend_schema(summary='Detalhar coordenador', tags=['Usuários e Perfis']),
+    create=extend_schema(summary='Criar coordenador', tags=['Usuários e Perfis']),
+    update=extend_schema(summary='Atualizar coordenador', tags=['Usuários e Perfis']),
+    partial_update=extend_schema(summary='Atualizar parcialmente coordenador', tags=['Usuários e Perfis']),
+    destroy=extend_schema(summary='Remover coordenador', tags=['Usuários e Perfis']),
+)
 class CoordenadorViewSet(viewsets.ModelViewSet):
     queryset = Coordenador.objects.select_related('usuario').all()
     serializer_class = CoordenadorSerializer
@@ -81,6 +264,14 @@ class CoordenadorViewSet(viewsets.ModelViewSet):
     ordering_fields = ['id', 'usuario__username', 'usuario__email']
     ordering = ['id']
 
+@extend_schema_view(
+    list=extend_schema(summary='Listar empresas parceiras', tags=['Empresas']),
+    retrieve=extend_schema(summary='Detalhar empresa parceira', tags=['Empresas']),
+    create=extend_schema(summary='Cadastrar empresa parceira', tags=['Empresas']),
+    update=extend_schema(summary='Atualizar empresa parceira', tags=['Empresas']),
+    partial_update=extend_schema(summary='Atualizar parcialmente empresa parceira', tags=['Empresas']),
+    destroy=extend_schema(summary='Remover empresa parceira', tags=['Empresas']),
+)
 class EmpresaParceiraViewSet(viewsets.ModelViewSet):
     queryset = EmpresaParceira.objects.all()
     serializer_class = EmpresaParceiraSerializer
@@ -91,6 +282,14 @@ class EmpresaParceiraViewSet(viewsets.ModelViewSet):
     ordering = ['nome_organizacao']
 
 
+@extend_schema_view(
+    list=extend_schema(summary='Listar supervisores de empresa', tags=['Empresas']),
+    retrieve=extend_schema(summary='Detalhar supervisor de empresa', tags=['Empresas']),
+    create=extend_schema(summary='Cadastrar supervisor de empresa', tags=['Empresas']),
+    update=extend_schema(summary='Atualizar supervisor de empresa', tags=['Empresas']),
+    partial_update=extend_schema(summary='Atualizar parcialmente supervisor de empresa', tags=['Empresas']),
+    destroy=extend_schema(summary='Remover supervisor de empresa', tags=['Empresas']),
+)
 class SupervisorEmpresaViewSet(viewsets.ModelViewSet):
     queryset = SupervisorEmpresa.objects.select_related('empresa').all()
     serializer_class = SupervisorEmpresaSerializer
@@ -101,6 +300,22 @@ class SupervisorEmpresaViewSet(viewsets.ModelViewSet):
     ordering = ['nome']
 
 
+@extend_schema_view(
+    list=extend_schema(
+        summary='Listar solicitações de estágio',
+        description='Estudantes visualizam apenas suas próprias solicitações. Professores e coordenadores visualizam todas.',
+        tags=['Solicitações'],
+    ),
+    retrieve=extend_schema(summary='Detalhar solicitação de estágio', tags=['Solicitações']),
+    create=extend_schema(summary='Criar solicitação de estágio', tags=['Solicitações']),
+    update=extend_schema(summary='Atualizar solicitação de estágio', tags=['Solicitações']),
+    partial_update=extend_schema(
+        summary='Atualizar parcialmente solicitação de estágio',
+        description='Usado também para transições de status, como EM_ANALISE, APROVADO, RECUSADO e PENDENTE.',
+        tags=['Solicitações'],
+    ),
+    destroy=extend_schema(summary='Remover solicitação de estágio', tags=['Solicitações']),
+)
 class SolicitacaoEstagioViewSet(viewsets.ModelViewSet):
     queryset = SolicitacaoEstagio.objects.select_related(
         'estudante__usuario',
@@ -170,6 +385,14 @@ class SolicitacaoEstagioViewSet(viewsets.ModelViewSet):
             'Solicitação de estágio criada.',
         )
 
+@extend_schema_view(
+    list=extend_schema(summary='Listar documentos', tags=['Documentos']),
+    retrieve=extend_schema(summary='Detalhar documento', tags=['Documentos']),
+    create=extend_schema(summary='Enviar documento', tags=['Documentos']),
+    update=extend_schema(summary='Atualizar documento', tags=['Documentos']),
+    partial_update=extend_schema(summary='Atualizar parcialmente documento', tags=['Documentos']),
+    destroy=extend_schema(summary='Remover documento', tags=['Documentos']),
+)
 class DocumentoViewSet(viewsets.ModelViewSet):
     queryset = Documento.objects.select_related(
         'solicitacao__estudante__usuario',
@@ -216,6 +439,10 @@ class DocumentoViewSet(viewsets.ModelViewSet):
         serializer.save()
 
 
+@extend_schema_view(
+    list=extend_schema(summary='Listar histórico de status', tags=['Solicitações']),
+    retrieve=extend_schema(summary='Detalhar registro de histórico de status', tags=['Solicitações']),
+)
 class HistoricoStatusSolicitacaoViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = HistoricoStatusSolicitacao.objects.select_related(
         'solicitacao__estudante__usuario',
@@ -253,6 +480,10 @@ class HistoricoStatusSolicitacaoViewSet(viewsets.ReadOnlyModelViewSet):
         return queryset.none()
 
 
+@extend_schema_view(
+    list=extend_schema(summary='Listar registros de auditoria', tags=['Auditoria']),
+    retrieve=extend_schema(summary='Detalhar registro de auditoria', tags=['Auditoria']),
+)
 class RegistroAuditoriaViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = RegistroAuditoria.objects.select_related('usuario').all()
     serializer_class = RegistroAuditoriaSerializer
@@ -263,6 +494,14 @@ class RegistroAuditoriaViewSet(viewsets.ReadOnlyModelViewSet):
     ordering = ['-data_criacao', '-id']
 
 
+@extend_schema_view(
+    list=extend_schema(summary='Listar pendências', tags=['Pendências']),
+    retrieve=extend_schema(summary='Detalhar pendência', tags=['Pendências']),
+    create=extend_schema(summary='Criar pendência', tags=['Pendências']),
+    update=extend_schema(summary='Atualizar pendência', tags=['Pendências']),
+    partial_update=extend_schema(summary='Atualizar parcialmente pendência', tags=['Pendências']),
+    destroy=extend_schema(summary='Remover pendência', tags=['Pendências']),
+)
 class PendenciaViewSet(viewsets.ModelViewSet):
     queryset = Pendencia.objects.select_related(
         'solicitacao__estudante__usuario',
