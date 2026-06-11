@@ -32,6 +32,7 @@ class Coordenador(models.Model):
 class EmpresaParceira(models.Model):
     nome_organizacao = models.CharField(max_length=255)
     cnpj = models.CharField(max_length=18, unique=True)
+    supervisor = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return self.nome_organizacao
@@ -49,6 +50,10 @@ class SolicitacaoEstagio(models.Model):
     data_abertura = models.DateField(auto_now_add=True)
     status_atual = models.CharField(max_length=20, choices=STATUS_CHOICES, default='ABERTO')
     score_conformidade = models.FloatField(default=0.0)
+    carga_horaria = models.PositiveIntegerField(default=0)
+    duracao_contrato = models.CharField(max_length=100, blank=True)
+    supervisor = models.CharField(max_length=255, blank=True)
+    seguro_obrigatorio = models.BooleanField(default=False)
     
     # Relacionamentos (As chaves estrangeiras que ligam as tabelas)
     estudante = models.ForeignKey(Estudante, on_delete=models.CASCADE, related_name='solicitacoes')
@@ -67,11 +72,7 @@ class Documento(models.Model):
 
     solicitacao = models.ForeignKey(SolicitacaoEstagio, on_delete=models.CASCADE, related_name='documentos')
     tipo = models.CharField(max_length=100)  # Ex: TCE, Plano de Atividades
-<<<<<<< HEAD
     arquivo = models.FileField(upload_to='documentos/', null=True, blank=True)
-=======
-    nome_arquivo = models.CharField(max_length=255)
->>>>>>> 721beea9b8ef3518ddc1c3c7d237a09c592b88db
     data_envio = models.DateField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_DOC, default='ENVIADO')
 
@@ -87,6 +88,7 @@ class Pendencia(models.Model):
 
     solicitacao = models.ForeignKey(SolicitacaoEstagio, on_delete=models.CASCADE, related_name='pendencias')
     descricao = models.TextField()
+    data_criacao = models.DateTimeField(auto_now_add=True)
     estado_resolucao = models.CharField(max_length=20, choices=ESTADO_RESOLUCAO, default='ABERTA')
 
     def __str__(self):

@@ -2,149 +2,120 @@
 id: documento_de_arquitetura
 title: Documento de Arquitetura
 ---
+
 # Documento de Arquitetura de Software (DAS)
 
-# "Nome do Projeto"
+## Sistema
 
-# Introdução
+Sistema Validador de Estágio.
 
-## Proposta
+## Introdução
 
-<p align = "justify">
-Este documento apresenta uma visão geral da arquitetura do sistema, utilizando diferentes visões arquiteturais para destacar diferentes aspectos do sistema. É utilizado para capturar as decisões arquiteturais significativas que fizeram parte do sistema.
-</p>
+Este documento descreve a arquitetura atual do backend do Sistema Validador de Estágio. O sistema foi implementado com Django e Django REST Framework, com foco na exposição de uma API REST para cadastro, acompanhamento e validação de solicitações de estágio.
 
-## Escopo
+## Escopo Arquitetural
 
-<p align = "justify">
-A aplicação "XXXX" tem o objetivo fornecer...
-</p>
+O escopo descrito neste documento contempla o backend do projeto. A aplicação centraliza regras e dados relacionados a usuários, perfis, empresas parceiras, solicitações de estágio, documentos e pendências.
 
-## Definições, Acrônimos e Abreviações
+O projeto não inclui, neste momento, um frontend completo no repositório. A API foi preparada para ser consumida por clientes externos por meio de rotas REST sob `/api/`.
 
-- MVC -
-- MVT -
-- SIGLA PARA O APP - Nome do Aplicativo
+## Tecnologias Utilizadas
 
-## Visão Geral
+- Python como linguagem principal.
+- Django como framework backend.
+- Django REST Framework para construção da API.
+- drf-spectacular para geração de documentação OpenAPI e Swagger.
+- django-cors-headers para configuração de CORS.
+- SQLite como banco de dados em desenvolvimento.
+- PostgreSQL recomendado para ambientes de produção.
 
-<p align = "justify">
-O Documento de Arquitetura de Software (DAS) trata-se de uma visão geral de toda a arquitetura do sistema, observando diferentes aspectos do mesmo. Neste documento serão abordadas as seguintes visões da aplicação TCM:
-</p>
+## Padrão Arquitetural
 
-- Caso de Uso;
-- Lógica;
-- Implantação;
-- Implementação;
-- Dados;
+O projeto segue o padrão MVT do Django:
 
-# Representação Arquitetural
+- Model: representa as entidades do domínio e a estrutura persistida no banco de dados.
+- View: no projeto, as ViewSets do Django REST Framework recebem requisições e expõem operações da API.
+- Template: não é o foco principal do sistema, pois a entrega atual é uma API REST.
 
-## Cliente-Servidor
+No contexto da API, serializers fazem a conversão entre models e representações JSON, além de centralizarem validações de entrada.
 
-<p align = "justify">
-Cliente-Servidor é um modelo de arquitetura...
-</p>
+## Organização do Projeto
 
-Cliente (Frontend):
+O app principal do sistema é `core`.
 
-- View: Consiste.....
+Responsabilidades principais:
 
-Servidor (Backend):
+- `core/models.py`: define entidades como `Usuario`, `Estudante`, `Professor`, `Coordenador`, `EmpresaParceira`, `SolicitacaoEstagio`, `Documento` e `Pendencia`.
+- `core/serializers.py`: define a representação da API e validações de dados.
+- `core/views.py`: define ViewSets, permissões, busca, ordenação, paginação e otimizações de queryset.
+- `core/admin.py`: registra os models no Django Admin.
+- `core/permissions.py`: define permissões iniciais por perfil de usuário.
+- `setup/settings.py`: centraliza configurações do Django, DRF, CORS, autenticação, paginação e OpenAPI.
+- `setup/urls.py`: centraliza rotas administrativas, rotas da API e documentação OpenAPI.
 
-- Controller: faz a conexão entre as camadas...
-- Service: Responsável pela lógica...
-- Model: Responsável pela persistência...
+## Visão de API
 
-# Objetivos de Arquitetura e Restrições
+As rotas REST são centralizadas sob `/api/` por meio de um `DefaultRouter` do Django REST Framework.
 
-## Objetivos
+Recursos expostos:
 
-<p align = "justify">
-Segurança:
-   -
-Persistência:
-   - 
-Privacidade:
-   - Middlewares: Foi usado middlewares...
-Desempenho:
-   Requisições...
-Reusabilidade:
-   Componentes no Frontend...
-</p>
+- `/api/usuarios/`
+- `/api/estudantes/`
+- `/api/professores/`
+- `/api/coordenadores/`
+- `/api/empresas/`
+- `/api/solicitacoes/`
+- `/api/documentos/`
+- `/api/pendencias/`
 
-## Restrições
+A documentação OpenAPI está disponível em:
 
-<p align = "justify">
-Tamanho da tela:...
+- `/api/schema/`
+- `/api/docs/`
 
-Portabilidade:...
+## Visão de Dados
 
-| IE | Edge  | Firefox | Chrome | Safari | Googlebot |
-| -- | ----- | ------- | ------ | ------ | --------- |
-| 11 | >= 14 | >= 52   | >= 49  | >= 10  | Sim       |
+O banco utilizado em desenvolvimento é SQLite, configurado como `db.sqlite3`. Para produção, recomenda-se PostgreSQL por oferecer maior robustez, controle de concorrência, recursos de administração e melhor adequação a ambientes multiusuário.
 
-Serviços: Os serviços oferecidos....
+Principais entidades:
 
-Acesso a internet: A aplicação está limitada apenas a conexão com internet
+- `Usuario`: usuário autenticável do sistema.
+- `Estudante`: perfil de estudante vinculado a um usuário.
+- `Professor`: perfil de professor vinculado a um usuário.
+- `Coordenador`: perfil de coordenador vinculado a um usuário.
+- `EmpresaParceira`: empresa relacionada à solicitação de estágio, com CNPJ e supervisor.
+- `SolicitacaoEstagio`: solicitação central do fluxo de validação.
+- `Documento`: arquivo enviado para uma solicitação.
+- `Pendencia`: inconsistência ou item a resolver em uma solicitação.
 
-</p>
+## Autenticação e Permissões
 
-## Ferramentas Utilizadas
+O projeto utiliza autenticação do Django REST Framework com `SessionAuthentication` e `BasicAuthentication`.
 
-- XXX: Ambiente de execução...
-- XXXX: Linguagem de programação...
-  Typescript: XXXX
-- XXXX: XXXX
-- XXX: XXXX
-- XXXX: XXXX
-- XXXX: XXXX
-- XXXX: XXXX
-- XXXXX: XXXX.
+As rotas da API exigem usuário autenticado por padrão. Também foram iniciadas permissões customizadas por perfil:
 
-# Visão de Caso de Uso
+- `IsEstudante`
+- `IsProfessor`
+- `IsCoordenador`
 
-<p align = "justify">
-O primeiro caso de uso descreve a ação...
-</p>
+Essas permissões verificam se o usuário autenticado possui relação com o respectivo perfil. Regras mais específicas por objeto podem ser evoluídas em etapas futuras.
 
-![Caso de uso 1](../assets/Casos_de_Uso/Exemplocaso_de_uso_1.png)
+## Qualidade e Desempenho
 
-![Caso de uso 2](../assets/Casos_de_Uso/Exemplocaso_de_uso_1.png)
+As ViewSets utilizam `select_related` em relações `ForeignKey` e `OneToOne` para reduzir consultas repetidas em listagens.
 
-# Visão Lógica
+A API também possui paginação padrão, busca e ordenação em recursos principais, especialmente solicitações, empresas, documentos e pendências.
 
-# Visão de Implantação
+## Restrições e Decisões Conhecidas
 
-# Visão de Implementação
+- SQLite é mantido para desenvolvimento local.
+- PostgreSQL é recomendado para produção.
+- A validação de CNPJ ainda verifica apenas formato com 14 dígitos.
+- As regras de transição de status ainda não foram formalizadas no model.
+- O sistema expõe API REST e documentação Swagger, mas não implementa um frontend completo neste repositório.
 
-## Visão Geral
+## Histórico de Versão
 
-![Diagrama de Componentes](../assets/Casos_de_Uso/Exemplocaso_de_uso_1.png)
-
-# Visão de Dados
-
-## Modelo Entidade Relacionamento (MER)
-
-#### Entidades e Relacionamentos:
-
-## Diagrama Entidade Relacionamento (DER)
-
-# Tamanho e Desempenho
-
-# Qualidade
-
-</p>
-
-# Referências Bibliográficas
-
-# Histórico de Versão
-
-| Data       | Versão | Descrição                                                            | Autor(es)                                   |
-| ---------- | ------- | ---------------------------------------------------------------------- | ------------------------------------------- |
-| 08/11/2020 | 1.0     | Criada estrutura básica do documento                                  | xxx xxx, xxx xx, xxx xx, xxx xxx e xxx xxxx |
-| 15/11/2020 | 1.1     | Representação arquitetural e objetivos e restrições arquiteturais. | Autores                                     |
-| 19/11/2020 | 1.2     | Adição dos diagramas, visões, tamanho e desempenho e qualidade      | Autores                                     |
-| 20/11/2020 | 1.3     | Adição da descrição de MER e DER                                   | Autores                                     |
-| 20/11/2020 | 1.4     | Adição do tópico de qualidade                                       | Autores                                     |
-| 20/11/2020 | 1.5     | Revisão                                                               | Autores                                     |
+| Data | Versão | Descrição | Autor(es) |
+| -- | -- | -- | -- |
+| 07/06/2026 | 1.0 | Revisão do DAS com a arquitetura real do Sistema Validador de Estágio | Equipe do projeto |

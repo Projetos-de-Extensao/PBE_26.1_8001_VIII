@@ -1,5 +1,9 @@
 Django>=5.0
 djangorestframework>=3.15
+djangorestframework-simplejwt>=5.3
 Pillow>=10.0
 django-cors-headers>=4.0
 drf-spectacular>=0.27
+mkdocs>=1.6
+mkdocs-material>=9.5
+mkdocs-minify-plugin>=0.8
