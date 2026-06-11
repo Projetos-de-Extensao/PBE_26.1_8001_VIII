@@ -79,8 +79,11 @@ class PendenciaActionPermission(BasePermission):
                 or has_coordenador_profile(user)
             )
 
-        if view.action in ['create', 'update', 'partial_update', 'destroy']:
+        if view.action == 'create' or view.action == 'destroy':
             return has_coordenador_profile(user)
+
+        if view.action in ['update', 'partial_update']:
+            return has_coordenador_profile(user) or has_estudante_profile(user)
 
         return False
 

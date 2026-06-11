@@ -13,9 +13,12 @@ from core.views import (
     ProfessorViewSet,
     CoordenadorViewSet,
     EmpresaParceiraViewSet,
+    HistoricoStatusSolicitacaoViewSet,
     SolicitacaoEstagioViewSet,
+    SupervisorEmpresaViewSet,
     DocumentoViewSet,
     PendenciaViewSet,
+    RegistroAuditoriaViewSet,
 )
 
 router = DefaultRouter()
@@ -24,7 +27,10 @@ router.register(r'estudantes', EstudanteViewSet)
 router.register(r'professores', ProfessorViewSet)
 router.register(r'coordenadores', CoordenadorViewSet)
 router.register(r'empresas', EmpresaParceiraViewSet)
+router.register(r'supervisores', SupervisorEmpresaViewSet)
 router.register(r'solicitacoes', SolicitacaoEstagioViewSet)
+router.register(r'historicos-status', HistoricoStatusSolicitacaoViewSet)
+router.register(r'auditoria', RegistroAuditoriaViewSet)
 router.register(r'documentos', DocumentoViewSet)
 router.register(r'pendencias', PendenciaViewSet)
 

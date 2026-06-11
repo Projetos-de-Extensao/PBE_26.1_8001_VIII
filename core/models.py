@@ -1,6 +1,6 @@
-from django.db import models
-
 from django.contrib.auth.models import AbstractUser
+from django.conf import settings
+from django.db import models
 
 
 class Usuario(AbstractUser):
@@ -11,6 +11,9 @@ class Usuario(AbstractUser):
 
 class Estudante(models.Model):
     usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE, related_name='estudante_profile')
+    curso = models.CharField(max_length=255, blank=True)
+    matricula = models.CharField(max_length=50, unique=True, null=True, blank=True)
+    elegivel_estagio = models.BooleanField(default=True)
     
     def __str__(self):
         return self.usuario.get_full_name()
@@ -38,6 +41,18 @@ class EmpresaParceira(models.Model):
         return self.nome_organizacao
 
 
+class SupervisorEmpresa(models.Model):
+    empresa = models.ForeignKey(EmpresaParceira, on_delete=models.CASCADE, related_name='supervisores')
+    nome = models.CharField(max_length=255)
+    email = models.EmailField(blank=True)
+    telefone = models.CharField(max_length=30, blank=True)
+    cargo = models.CharField(max_length=100, blank=True)
+    ativo = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.nome} - {self.empresa}"
+
+
 class SolicitacaoEstagio(models.Model):
     STATUS_CHOICES = [
         ('ABERTO', 'Aberto'),
@@ -54,6 +69,7 @@ class SolicitacaoEstagio(models.Model):
     duracao_contrato = models.CharField(max_length=100, blank=True)
     supervisor = models.CharField(max_length=255, blank=True)
     seguro_obrigatorio = models.BooleanField(default=False)
+    justificativa_recusa = models.TextField(blank=True)
     
     # Relacionamentos (As chaves estrangeiras que ligam as tabelas)
     estudante = models.ForeignKey(Estudante, on_delete=models.CASCADE, related_name='solicitacoes')
@@ -61,6 +77,59 @@ class SolicitacaoEstagio(models.Model):
 
     def __str__(self):
         return f"Solicitação {self.id} - {self.estudante}"
+
+
+class HistoricoStatusSolicitacao(models.Model):
+    solicitacao = models.ForeignKey(
+        SolicitacaoEstagio,
+        on_delete=models.CASCADE,
+        related_name='historico_status',
+    )
+    status_anterior = models.CharField(max_length=20, choices=SolicitacaoEstagio.STATUS_CHOICES)
+    status_novo = models.CharField(max_length=20, choices=SolicitacaoEstagio.STATUS_CHOICES)
+    alterado_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='historicos_status_solicitacao',
+    )
+    data_alteracao = models.DateTimeField(auto_now_add=True)
+    observacao = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ['-data_alteracao', '-id']
+
+    def __str__(self):
+        return f"Solicitação {self.solicitacao_id}: {self.status_anterior} -> {self.status_novo}"
+
+
+class RegistroAuditoria(models.Model):
+    ACAO_CHOICES = [
+        ('CRIACAO', 'Criação'),
+        ('ATUALIZACAO', 'Atualização'),
+        ('STATUS', 'Mudança de Status'),
+        ('PENDENCIA', 'Pendência'),
+    ]
+
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='registros_auditoria',
+    )
+    acao = models.CharField(max_length=20, choices=ACAO_CHOICES)
+    recurso = models.CharField(max_length=100)
+    objeto_id = models.CharField(max_length=50, blank=True)
+    descricao = models.TextField(blank=True)
+    data_criacao = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-data_criacao', '-id']
+
+    def __str__(self):
+        return f"{self.acao} {self.recurso} #{self.objeto_id}"
 
 
 class Documento(models.Model):

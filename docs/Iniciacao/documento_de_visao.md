@@ -67,7 +67,7 @@ O sistema oferece models, serializers, ViewSets e rotas REST para os dados centr
 - O banco SQLite é adequado para desenvolvimento, mas não é recomendado para produção.
 - As regras de validação ainda são básicas e devem evoluir conforme regras institucionais mais detalhadas forem definidas.
 - As permissões por perfil existem de forma inicial, sem regras complexas por objeto.
-- A validação de CNPJ verifica apenas a quantidade de dígitos, sem algoritmo de dígitos verificadores.
+- A validação de CNPJ aceita valores com ou sem máscara e verifica os dígitos verificadores.
 - O projeto atual não contempla um frontend completo dentro deste repositório.
 
 ## Visão Geral do Fluxo de Validação

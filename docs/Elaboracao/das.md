@@ -110,7 +110,7 @@ A API também possui paginação padrão, busca e ordenação em recursos princi
 
 - SQLite é mantido para desenvolvimento local.
 - PostgreSQL é recomendado para produção.
-- A validação de CNPJ ainda verifica apenas formato com 14 dígitos.
+- A validação de CNPJ aceita valores com ou sem máscara e verifica os dígitos verificadores.
 - As regras de transição de status ainda não foram formalizadas no model.
 - O sistema expõe API REST e documentação Swagger, mas não implementa um frontend completo neste repositório.
 
