@@ -251,15 +251,56 @@ class ProfileActionPermissionAPITestCase(APITestCase):
     def test_coordenador_altera_status_solicitacao(self):
         self.client.force_authenticate(user=self.coordenador_user)
 
+        em_analise_response = self.client.patch(
+            f'/api/solicitacoes/{self.solicitacao.id}/',
+            {'status_atual': 'EM_ANALISE'},
+            format='json',
+        )
+        aprovado_response = self.client.patch(
+            f'/api/solicitacoes/{self.solicitacao.id}/',
+            {'status_atual': 'APROVADO'},
+            format='json',
+        )
+
+        self.assertEqual(em_analise_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(aprovado_response.status_code, status.HTTP_200_OK)
+        self.solicitacao.refresh_from_db()
+        self.assertEqual(self.solicitacao.status_atual, 'APROVADO')
+
+    def test_bloqueia_transicao_invalida_de_aberto_para_aprovado(self):
+        self.client.force_authenticate(user=self.coordenador_user)
+
         response = self.client.patch(
             f'/api/solicitacoes/{self.solicitacao.id}/',
             {'status_atual': 'APROVADO'},
             format='json',
         )
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('Transição de status inválida', str(response.data['status_atual']))
         self.solicitacao.refresh_from_db()
-        self.assertEqual(self.solicitacao.status_atual, 'APROVADO')
+        self.assertEqual(self.solicitacao.status_atual, 'ABERTO')
+
+    def test_permite_fluxo_pendente_para_em_analise_e_recusado(self):
+        self.client.force_authenticate(user=self.coordenador_user)
+        self.solicitacao.status_atual = 'PENDENTE'
+        self.solicitacao.save()
+
+        em_analise_response = self.client.patch(
+            f'/api/solicitacoes/{self.solicitacao.id}/',
+            {'status_atual': 'EM_ANALISE'},
+            format='json',
+        )
+        recusado_response = self.client.patch(
+            f'/api/solicitacoes/{self.solicitacao.id}/',
+            {'status_atual': 'RECUSADO'},
+            format='json',
+        )
+
+        self.assertEqual(em_analise_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(recusado_response.status_code, status.HTTP_200_OK)
+        self.solicitacao.refresh_from_db()
+        self.assertEqual(self.solicitacao.status_atual, 'RECUSADO')
 
     def test_professor_visualiza_mas_nao_deleta_solicitacao(self):
         self.client.force_authenticate(user=self.professor_user)

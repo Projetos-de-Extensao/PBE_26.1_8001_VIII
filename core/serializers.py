@@ -47,6 +47,14 @@ class EmpresaParceiraSerializer(serializers.ModelSerializer):
 
         return cnpj
 class SolicitacaoEstagioSerializer(serializers.ModelSerializer):
+    TRANSICOES_STATUS = {
+        'ABERTO': {'EM_ANALISE'},
+        'EM_ANALISE': {'APROVADO', 'RECUSADO', 'PENDENTE'},
+        'PENDENTE': {'EM_ANALISE', 'RECUSADO'},
+        'APROVADO': set(),
+        'RECUSADO': set(),
+    }
+
     estudante_nome = serializers.CharField(source='estudante.usuario.get_full_name', read_only=True)
     empresa_nome = serializers.CharField(source='empresa.nome_organizacao', read_only=True)
     class Meta:
@@ -105,6 +113,16 @@ class SolicitacaoEstagioSerializer(serializers.ModelSerializer):
 
         if status_atual is not None and status_atual not in status_permitidos:
             errors['status_atual'] = 'Status inválido para solicitação de estágio.'
+
+        if self.instance is not None and status_atual is not None:
+            status_anterior = self.instance.status_atual
+            status_nao_mudou = status_atual == status_anterior
+            status_permitido = status_atual in self.TRANSICOES_STATUS.get(status_anterior, set())
+
+            if not status_nao_mudou and not status_permitido:
+                errors['status_atual'] = (
+                    f'Transição de status inválida: {status_anterior} -> {status_atual}.'
+                )
 
         if errors:
             raise serializers.ValidationError(errors)
