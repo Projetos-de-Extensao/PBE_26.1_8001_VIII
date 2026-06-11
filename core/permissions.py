@@ -1,31 +1,88 @@
 from rest_framework.permissions import BasePermission
 
 
+def has_estudante_profile(user):
+    return user and user.is_authenticated and hasattr(user, 'estudante_profile')
+
+
+def has_professor_profile(user):
+    return user and user.is_authenticated and hasattr(user, 'professor_profile')
+
+
+def has_coordenador_profile(user):
+    return user and user.is_authenticated and hasattr(user, 'coordenador_profile')
+
+
 class IsEstudante(BasePermission):
     def has_permission(self, request, view):
-        return (
-            request.user
-            and request.user.is_authenticated
-            and hasattr(request.user, 'estudante_profile')
-        )
+        return has_estudante_profile(request.user)
 
 
 class IsProfessor(BasePermission):
     def has_permission(self, request, view):
-        return (
-            request.user
-            and request.user.is_authenticated
-            and hasattr(request.user, 'professor_profile')
-        )
+        return has_professor_profile(request.user)
 
 
 class IsCoordenador(BasePermission):
     def has_permission(self, request, view):
-        return (
-            request.user
-            and request.user.is_authenticated
-            and hasattr(request.user, 'coordenador_profile')
-        )
+        return has_coordenador_profile(request.user)
+
+
+class SolicitacaoEstagioActionPermission(BasePermission):
+    def has_permission(self, request, view):
+        user = request.user
+
+        if view.action in ['list', 'retrieve']:
+            return (
+                has_estudante_profile(user)
+                or has_professor_profile(user)
+                or has_coordenador_profile(user)
+            )
+
+        if view.action == 'create':
+            return has_estudante_profile(user)
+
+        if view.action in ['update', 'partial_update', 'destroy']:
+            return has_coordenador_profile(user)
+
+        return False
+
+
+class DocumentoActionPermission(BasePermission):
+    def has_permission(self, request, view):
+        user = request.user
+
+        if view.action in ['list', 'retrieve']:
+            return (
+                has_estudante_profile(user)
+                or has_professor_profile(user)
+                or has_coordenador_profile(user)
+            )
+
+        if view.action == 'create':
+            return has_estudante_profile(user)
+
+        if view.action in ['update', 'partial_update', 'destroy']:
+            return has_coordenador_profile(user)
+
+        return False
+
+
+class PendenciaActionPermission(BasePermission):
+    def has_permission(self, request, view):
+        user = request.user
+
+        if view.action in ['list', 'retrieve']:
+            return (
+                has_estudante_profile(user)
+                or has_professor_profile(user)
+                or has_coordenador_profile(user)
+            )
+
+        if view.action in ['create', 'update', 'partial_update', 'destroy']:
+            return has_coordenador_profile(user)
+
+        return False
 
 
 class IsSolicitacaoOwnerOrStaffProfile(BasePermission):
@@ -35,10 +92,10 @@ class IsSolicitacaoOwnerOrStaffProfile(BasePermission):
         if not user or not user.is_authenticated:
             return False
 
-        if hasattr(user, 'coordenador_profile') or hasattr(user, 'professor_profile'):
+        if has_coordenador_profile(user) or has_professor_profile(user):
             return True
 
-        if not hasattr(user, 'estudante_profile'):
+        if not has_estudante_profile(user):
             return False
 
         estudante = user.estudante_profile

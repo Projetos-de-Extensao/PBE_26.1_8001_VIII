@@ -1,5 +1,6 @@
 from django.http import HttpResponse
 
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
@@ -15,10 +16,13 @@ from .models import (
     Usuario,
 )
 from .permissions import (
+    DocumentoActionPermission,
     IsCoordenador,
     IsEstudante,
     IsProfessor,
     IsSolicitacaoOwnerOrStaffProfile,
+    PendenciaActionPermission,
+    SolicitacaoEstagioActionPermission,
 )
 from .serializers import (
     CoordenadorSerializer,
@@ -87,7 +91,7 @@ class SolicitacaoEstagioViewSet(viewsets.ModelViewSet):
     serializer_class = SolicitacaoEstagioSerializer
     permission_classes = [
         IsAuthenticated,
-        IsEstudante | IsProfessor | IsCoordenador,
+        SolicitacaoEstagioActionPermission,
         IsSolicitacaoOwnerOrStaffProfile,
     ]
     filter_backends = [SearchFilter, OrderingFilter]
@@ -127,6 +131,13 @@ class SolicitacaoEstagioViewSet(viewsets.ModelViewSet):
 
         return queryset.none()
 
+    def perform_create(self, serializer):
+        if hasattr(self.request.user, 'estudante_profile'):
+            serializer.save(estudante=self.request.user.estudante_profile)
+            return
+
+        serializer.save()
+
 class DocumentoViewSet(viewsets.ModelViewSet):
     queryset = Documento.objects.select_related(
         'solicitacao__estudante__usuario',
@@ -135,7 +146,7 @@ class DocumentoViewSet(viewsets.ModelViewSet):
     serializer_class = DocumentoSerializer
     permission_classes = [
         IsAuthenticated,
-        IsEstudante | IsProfessor | IsCoordenador,
+        DocumentoActionPermission,
         IsSolicitacaoOwnerOrStaffProfile,
     ]
     filter_backends = [SearchFilter, OrderingFilter]
@@ -161,6 +172,17 @@ class DocumentoViewSet(viewsets.ModelViewSet):
 
         return queryset.none()
 
+    def perform_create(self, serializer):
+        solicitacao = serializer.validated_data.get('solicitacao')
+
+        if (
+            hasattr(self.request.user, 'estudante_profile')
+            and solicitacao.estudante_id != self.request.user.estudante_profile.id
+        ):
+            raise PermissionDenied('Você não pode enviar documento para solicitação de outro estudante.')
+
+        serializer.save()
+
 class PendenciaViewSet(viewsets.ModelViewSet):
     queryset = Pendencia.objects.select_related(
         'solicitacao__estudante__usuario',
@@ -169,7 +191,7 @@ class PendenciaViewSet(viewsets.ModelViewSet):
     serializer_class = PendenciaSerializer
     permission_classes = [
         IsAuthenticated,
-        IsEstudante | IsProfessor | IsCoordenador,
+        PendenciaActionPermission,
         IsSolicitacaoOwnerOrStaffProfile,
     ]
     filter_backends = [SearchFilter, OrderingFilter]

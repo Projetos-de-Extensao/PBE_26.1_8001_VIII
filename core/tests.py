@@ -2,7 +2,15 @@ from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from .models import Documento, EmpresaParceira, Estudante, Pendencia, SolicitacaoEstagio
+from .models import (
+    Coordenador,
+    Documento,
+    EmpresaParceira,
+    Estudante,
+    Pendencia,
+    Professor,
+    SolicitacaoEstagio,
+)
 
 
 class SolicitacaoEstagioAPITestCase(APITestCase):
@@ -54,7 +62,7 @@ class SolicitacaoEstagioAPITestCase(APITestCase):
         self.assertEqual(response.data['count'], 1)
         self.assertEqual(len(response.data['results']), 1)
 
-    def test_altera_status_solicitacao_estagio(self):
+    def test_estudante_nao_altera_status_solicitacao_estagio(self):
         solicitacao = SolicitacaoEstagio.objects.create(
             estudante=self.estudante,
             empresa=self.empresa,
@@ -70,9 +78,9 @@ class SolicitacaoEstagioAPITestCase(APITestCase):
             format='json',
         )
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         solicitacao.refresh_from_db()
-        self.assertEqual(solicitacao.status_atual, 'APROVADO')
+        self.assertEqual(solicitacao.status_atual, 'ABERTO')
 
     def test_acesso_nao_autenticado_retorna_401_ou_403(self):
         self.client.force_authenticate(user=None)
@@ -215,3 +223,99 @@ class ObjectPermissionAPITestCase(APITestCase):
         ids = [item['id'] for item in response.data['results']]
         self.assertIn(self.pendencia_a.id, ids)
         self.assertNotIn(self.pendencia_b.id, ids)
+
+
+class ProfileActionPermissionAPITestCase(APITestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.estudante_user = User.objects.create_user(username='acao_estudante', password='senha')
+        self.professor_user = User.objects.create_user(username='acao_professor', password='senha')
+        self.coordenador_user = User.objects.create_user(username='acao_coordenador', password='senha')
+        self.estudante = Estudante.objects.create(usuario=self.estudante_user)
+        self.professor = Professor.objects.create(usuario=self.professor_user)
+        self.coordenador = Coordenador.objects.create(usuario=self.coordenador_user)
+        self.empresa = EmpresaParceira.objects.create(
+            nome_organizacao='Empresa Acao',
+            cnpj='12345678000193',
+            supervisor='Supervisor Acao',
+        )
+        self.solicitacao = SolicitacaoEstagio.objects.create(
+            estudante=self.estudante,
+            empresa=self.empresa,
+            carga_horaria=20,
+            duracao_contrato='4 meses',
+            supervisor='Supervisor Acao',
+            seguro_obrigatorio=True,
+        )
+
+    def test_coordenador_altera_status_solicitacao(self):
+        self.client.force_authenticate(user=self.coordenador_user)
+
+        response = self.client.patch(
+            f'/api/solicitacoes/{self.solicitacao.id}/',
+            {'status_atual': 'APROVADO'},
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.solicitacao.refresh_from_db()
+        self.assertEqual(self.solicitacao.status_atual, 'APROVADO')
+
+    def test_professor_visualiza_mas_nao_deleta_solicitacao(self):
+        self.client.force_authenticate(user=self.professor_user)
+
+        detail_response = self.client.get(f'/api/solicitacoes/{self.solicitacao.id}/')
+        delete_response = self.client.delete(f'/api/solicitacoes/{self.solicitacao.id}/')
+
+        self.assertEqual(detail_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(delete_response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_estudante_envia_documento_para_sua_solicitacao(self):
+        self.client.force_authenticate(user=self.estudante_user)
+
+        response = self.client.post(
+            '/api/documentos/',
+            {'solicitacao': self.solicitacao.id, 'tipo': 'TCE'},
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Documento.objects.count(), 1)
+
+    def test_estudante_nao_cria_pendencia(self):
+        self.client.force_authenticate(user=self.estudante_user)
+
+        response = self.client.post(
+            '/api/pendencias/',
+            {'solicitacao': self.solicitacao.id, 'descricao': 'Documento pendente'},
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_coordenador_cria_pendencia(self):
+        self.client.force_authenticate(user=self.coordenador_user)
+
+        response = self.client.post(
+            '/api/pendencias/',
+            {'solicitacao': self.solicitacao.id, 'descricao': 'Documento pendente'},
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Pendencia.objects.count(), 1)
+
+    def test_coordenador_gerencia_empresa(self):
+        self.client.force_authenticate(user=self.coordenador_user)
+
+        response = self.client.post(
+            '/api/empresas/',
+            {
+                'nome_organizacao': 'Empresa Coordenador',
+                'cnpj': '12.345.678/0001-94',
+                'supervisor': 'Supervisor Coordenador',
+            },
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
