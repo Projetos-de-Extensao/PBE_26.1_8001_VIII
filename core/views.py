@@ -14,7 +14,12 @@ from .models import (
     SolicitacaoEstagio,
     Usuario,
 )
-from .permissions import IsCoordenador, IsEstudante, IsProfessor
+from .permissions import (
+    IsCoordenador,
+    IsEstudante,
+    IsProfessor,
+    IsSolicitacaoOwnerOrStaffProfile,
+)
 from .serializers import (
     CoordenadorSerializer,
     DocumentoSerializer,
@@ -80,7 +85,11 @@ class SolicitacaoEstagioViewSet(viewsets.ModelViewSet):
         'empresa',
     ).all()
     serializer_class = SolicitacaoEstagioSerializer
-    permission_classes = [IsAuthenticated, IsEstudante | IsProfessor | IsCoordenador]
+    permission_classes = [
+        IsAuthenticated,
+        IsEstudante | IsProfessor | IsCoordenador,
+        IsSolicitacaoOwnerOrStaffProfile,
+    ]
     filter_backends = [SearchFilter, OrderingFilter]
     search_fields = [
         'estudante__usuario__username',
@@ -106,13 +115,29 @@ class SolicitacaoEstagioViewSet(viewsets.ModelViewSet):
     ]
     ordering = ['-data_abertura', '-id']
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        user = self.request.user
+
+        if hasattr(user, 'coordenador_profile') or hasattr(user, 'professor_profile'):
+            return queryset
+
+        if hasattr(user, 'estudante_profile'):
+            return queryset.filter(estudante=user.estudante_profile)
+
+        return queryset.none()
+
 class DocumentoViewSet(viewsets.ModelViewSet):
     queryset = Documento.objects.select_related(
         'solicitacao__estudante__usuario',
         'solicitacao__empresa',
     ).all()
     serializer_class = DocumentoSerializer
-    permission_classes = [IsAuthenticated, IsEstudante | IsProfessor | IsCoordenador]
+    permission_classes = [
+        IsAuthenticated,
+        IsEstudante | IsProfessor | IsCoordenador,
+        IsSolicitacaoOwnerOrStaffProfile,
+    ]
     filter_backends = [SearchFilter, OrderingFilter]
     search_fields = [
         'tipo',
@@ -124,13 +149,29 @@ class DocumentoViewSet(viewsets.ModelViewSet):
     ordering_fields = ['id', 'tipo', 'status', 'data_envio', 'solicitacao__id']
     ordering = ['-data_envio', '-id']
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        user = self.request.user
+
+        if hasattr(user, 'coordenador_profile') or hasattr(user, 'professor_profile'):
+            return queryset
+
+        if hasattr(user, 'estudante_profile'):
+            return queryset.filter(solicitacao__estudante=user.estudante_profile)
+
+        return queryset.none()
+
 class PendenciaViewSet(viewsets.ModelViewSet):
     queryset = Pendencia.objects.select_related(
         'solicitacao__estudante__usuario',
         'solicitacao__empresa',
     ).all()
     serializer_class = PendenciaSerializer
-    permission_classes = [IsAuthenticated, IsEstudante | IsProfessor | IsCoordenador]
+    permission_classes = [
+        IsAuthenticated,
+        IsEstudante | IsProfessor | IsCoordenador,
+        IsSolicitacaoOwnerOrStaffProfile,
+    ]
     filter_backends = [SearchFilter, OrderingFilter]
     search_fields = [
         'descricao',
@@ -141,4 +182,16 @@ class PendenciaViewSet(viewsets.ModelViewSet):
     ]
     ordering_fields = ['id', 'data_criacao', 'estado_resolucao', 'solicitacao__id']
     ordering = ['-data_criacao', '-id']
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        user = self.request.user
+
+        if hasattr(user, 'coordenador_profile') or hasattr(user, 'professor_profile'):
+            return queryset
+
+        if hasattr(user, 'estudante_profile'):
+            return queryset.filter(solicitacao__estudante=user.estudante_profile)
+
+        return queryset.none()
 
