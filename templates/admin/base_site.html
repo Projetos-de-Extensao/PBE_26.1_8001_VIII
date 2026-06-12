@@ -1,0 +1,276 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{{ title }} | Sistema Validador de Estagio{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    :root {
+        --primary: #2357d8;
+        --secondary: #173f9f;
+        --accent: #0d8c5a;
+        --primary-fg: #ffffff;
+        --body-bg: #f4f7fb;
+        --body-fg: #172033;
+        --body-quiet-color: #66738a;
+        --body-loud-color: #172033;
+        --header-color: #ffffff;
+        --header-branding-color: #ffffff;
+        --header-bg: #173f9f;
+        --header-link-color: #ffffff;
+        --breadcrumbs-bg: #2357d8;
+        --breadcrumbs-fg: #ffffff;
+        --link-fg: #2357d8;
+        --link-hover-color: #173f9f;
+        --default-button-bg: #2357d8;
+        --default-button-hover-bg: #173f9f;
+        --button-bg: #2357d8;
+        --button-hover-bg: #173f9f;
+        --border-color: #dce5f2;
+        --hairline-color: #e7edf7;
+        --darkened-bg: #eef4ff;
+        --selected-bg: #eef4ff;
+        --selected-row: #eef4ff;
+    }
+
+    body {
+        background:
+            radial-gradient(circle at top left, rgba(35, 87, 216, 0.16), transparent 32rem),
+            linear-gradient(180deg, #f9fbff 0%, #f4f7fb 100%);
+        color: var(--body-fg);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    #header {
+        min-height: 66px;
+        padding: 0 32px;
+        background: linear-gradient(135deg, #173f9f 0%, #2357d8 100%);
+        box-shadow: 0 14px 34px rgba(23, 32, 51, 0.18);
+    }
+
+    #branding {
+        display: flex;
+        align-items: center;
+        min-height: 66px;
+    }
+
+    #branding h1,
+    #branding h1 a:link,
+    #branding h1 a:visited {
+        color: #ffffff;
+        font-size: 1.15rem;
+        font-weight: 900;
+        letter-spacing: 0;
+    }
+
+    #branding h1::before {
+        content: "";
+        display: inline-block;
+        width: 11px;
+        height: 11px;
+        margin-right: 10px;
+        border-radius: 50%;
+        background: #0d8c5a;
+        box-shadow: 0 0 0 6px rgba(13, 140, 90, 0.22);
+        vertical-align: middle;
+    }
+
+    #user-tools {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 66px;
+        font-size: 0.78rem;
+        font-weight: 750;
+        letter-spacing: 0;
+    }
+
+    #user-tools a,
+    #logout-form button {
+        border-radius: 999px;
+        padding: 7px 10px;
+        background: rgba(255, 255, 255, 0.13);
+        color: #ffffff;
+        text-transform: none;
+    }
+
+    #user-tools a:hover,
+    #logout-form button:hover {
+        background: rgba(255, 255, 255, 0.22);
+        color: #ffffff;
+    }
+
+    div.breadcrumbs {
+        padding: 13px 32px;
+        background: rgba(35, 87, 216, 0.94);
+        color: #ffffff;
+        border: 0;
+    }
+
+    div.breadcrumbs a {
+        color: #ffffff;
+        font-weight: 800;
+    }
+
+    #content {
+        width: min(1180px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 28px 0 48px;
+    }
+
+    #content h1 {
+        margin: 0 0 18px;
+        color: #172033;
+        font-size: 2rem;
+        font-weight: 900;
+        letter-spacing: 0;
+    }
+
+    .module,
+    .grp-module,
+    #content-main > form,
+    .login #content-main {
+        overflow: hidden;
+        border: 1px solid #dce5f2;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 20px 48px rgba(23, 32, 51, 0.09);
+    }
+
+    .module h2,
+    .module caption,
+    .inline-group h2 {
+        padding: 13px 16px;
+        background: #eef4ff;
+        color: #173f9f;
+        font-size: 0.85rem;
+        font-weight: 900;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+
+    .dashboard .module table th,
+    .dashboard .module table td {
+        padding: 12px 16px;
+    }
+
+    .dashboard .module table th a {
+        color: #172033;
+        font-weight: 850;
+    }
+
+    .object-tools a:link,
+    .object-tools a:visited,
+    input[type="submit"],
+    button[type="submit"],
+    .submit-row input,
+    .button {
+        border-radius: 6px;
+        background: #2357d8;
+        color: #ffffff;
+        font-weight: 850;
+    }
+
+    .object-tools a:hover,
+    input[type="submit"]:hover,
+    button[type="submit"]:hover,
+    .submit-row input:hover,
+    .button:hover {
+        background: #173f9f;
+    }
+
+    input,
+    select,
+    textarea,
+    .vTextField {
+        border: 1px solid #dce5f2;
+        border-radius: 6px;
+        padding: 9px 10px;
+        background: #ffffff;
+        color: #172033;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+        border-color: #2357d8;
+        box-shadow: 0 0 0 3px rgba(35, 87, 216, 0.14);
+        outline: none;
+    }
+
+    .login #container {
+        width: min(430px, calc(100% - 32px));
+        margin-top: 8vh;
+        border: 0;
+        background: transparent;
+    }
+
+    .login #header {
+        border-radius: 8px 8px 0 0;
+        padding: 0 24px;
+    }
+
+    .login #content {
+        width: 100%;
+        padding: 0;
+    }
+
+    .login #content-main {
+        padding: 24px;
+        border-radius: 0 0 8px 8px;
+    }
+
+    .login .form-row {
+        padding: 0 0 14px;
+    }
+
+    .login .submit-row {
+        padding: 8px 0 0;
+    }
+
+    .login .submit-row input {
+        width: 100%;
+        padding: 12px 16px;
+    }
+
+    table {
+        border-radius: 8px;
+    }
+
+    thead th {
+        background: #f7faff;
+        color: #66738a;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+    }
+
+    tbody tr:hover {
+        background: #f7faff;
+    }
+
+    @media (max-width: 767px) {
+        #header {
+            padding: 0 16px;
+        }
+
+        div.breadcrumbs {
+            padding: 12px 16px;
+        }
+
+        #content {
+            width: min(100% - 24px, 1180px);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+    <a href="{% url 'admin:index' %}">Sistema Validador de Estagio</a>
+</h1>
+{% endblock %}
+
+{% block nav-global %}
+<a href="{% url 'sistema_dashboard' %}" style="color:#fff;font-weight:800;margin-left:18px;">Painel Web</a>
+<a href="{% url 'swagger-ui' %}" style="color:#fff;font-weight:800;margin-left:14px;">Swagger</a>
+{% endblock %}
